@@ -1,0 +1,7 @@
+# personal reference files, not part of the site
+*.xlsx
+*.docx
+~$*
+
+# your private starter data (characters, classes) - never upload
+my-data.json

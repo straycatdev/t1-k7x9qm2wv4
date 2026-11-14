@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0e14">
+<meta name="color-scheme" content="dark light">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Aion 2 daily checklist, Odyle energy tracker and event timers.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Top1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Top1 Tracker</title>
+<script>try{var s=JSON.parse(localStorage.getItem('top1tracker.v2'));var t=(s&&s.theme)||'dark';if(t==='auto')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#0b0e14;--s1:#11151e;--s2:#161b27;--s3:#1c2332;--ln:#232b3d;--tx:#e8ebf3;--tx2:#b9c2d6;--mu:#808ba3;--ac:#f5b942;--act:var(--ac);--cy:#4cc9f0;--ok:#3ddc97;--bad:#ff7a7a;--done-tx:#9fe3c4;--on-cy:#04202b;--sh:none;--r:12px;--th:52px;color-scheme:dark}
+:root[data-theme=light]{--bg:#f2f4f8;--s1:#ffffff;--s2:#f4f6fa;--s3:#e8edf4;--ln:#dbe1ec;--tx:#131a2b;--tx2:#3a4560;--mu:#5b6783;--act:color-mix(in srgb,var(--ac) 58%,#000);--cy:#0a8bb5;--ok:#10985f;--bad:#d64545;--done-tx:#0b6b45;--on-cy:#fff;--sh:0 1px 2px rgba(16,24,40,.06),0 1px 1px rgba(16,24,40,.04);color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{margin:0;color:var(--tx);font:13.5px/1.4 system-ui,"Segoe UI",Roboto,sans-serif;min-height:100vh;
+ background:radial-gradient(900px 360px at 50% -140px,color-mix(in srgb,var(--ac) 12%,transparent),transparent) no-repeat,var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--ln);border-radius:9px;padding:7px 10px;max-width:100%;min-height:36px}
+input:focus,select:focus,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+input[type=number]{width:80px}
+.muted{color:var(--mu);font-size:12px}
+.sp{flex:1}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--ln)}
+.top-in{max-width:1560px;margin:0 auto;padding:0 14px;height:var(--th);display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+h1{margin:0;font-size:16px;letter-spacing:3px;font-weight:800;white-space:nowrap}
+h1 b{color:var(--act)}
+.ib{width:40px;height:40px;flex:none;display:inline-grid;place-items:center;background:var(--s2);border:1px solid var(--ln);border-radius:11px;color:var(--tx);padding:0}
+.ib:hover{border-color:var(--mu)}
+.btn{background:var(--s2);border:1px solid var(--ln);border-radius:10px;padding:7px 13px;min-height:36px;color:var(--tx);font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:border-color .12s,background .12s;box-shadow:var(--sh)}
+.btn:hover{border-color:var(--mu)}
+.btn.on,.btn.pri{background:var(--ac);border-color:var(--ac);color:#1a1202;font-weight:700}
+.btn.sm{padding:3px 10px;min-height:28px;font-size:12px}
+.btn.dg{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,var(--ln))}
+.btn.block{width:100%}
+.wrap{max-width:1560px;margin:0 auto;padding:10px 12px 40px}
+
+/* layout banner */
+.lbar{position:sticky;top:var(--th);z-index:15;background:color-mix(in srgb,var(--ac) 14%,var(--s1));border-bottom:1px solid color-mix(in srgb,var(--ac) 45%,var(--ln))}
+.lbar-in{max-width:1560px;margin:0 auto;padding:8px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lbar b{color:var(--act)}
+
+/* zones & widgets */
+.zones{display:flex;flex-direction:column;gap:8px}
+.zone{display:flex;flex-direction:column;gap:8px;min-width:0}
+.zone.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.strip .w.big{grid-column:1/-1}
+#cols{display:grid;grid-template-columns:var(--gtc,minmax(0,1fr));gap:8px;align-items:start}
+.w{position:relative;min-width:0;display:flex;flex-direction:column;border-radius:var(--r)}
+.wc{flex:1;min-width:0}
+.wc>.tile{height:100%}
+.lm .zone{border:1.5px dashed var(--ln);border-radius:var(--r);padding:8px;min-height:84px}
+.lm .zone.over{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 6%,transparent)}
+.zh{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--mu)}
+.zh b{flex:1;font-weight:700}
+.lm .w{outline:1.5px solid color-mix(in srgb,var(--ac) 40%,var(--ln));cursor:grab;background:var(--s1)}
+.lm .w.dragging{opacity:.35}
+.lm .wc{pointer-events:none;opacity:.75;max-height:260px;overflow:hidden}
+.lm .w.ins{box-shadow:0 -4px 0 0 var(--ac)}
+.lm .strip .w.ins:not(.big){box-shadow:-4px 0 0 0 var(--ac)}
+.lm .zone.ins-end::after{content:'';display:block;height:4px;border-radius:2px;background:var(--ac);grid-column:1/-1}
+.wb{display:flex;align-items:center;gap:4px;padding:5px 6px 5px 10px;background:var(--s2);border-radius:var(--r) var(--r) 0 0;border-bottom:1px solid var(--ln)}
+.wb b{font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strip .wb{flex-wrap:wrap}.strip .wb b{flex:1 0 100%;order:-1;padding:0 0 3px 2px}.strip .wb .grip{display:none}
+.grip{color:var(--mu);margin-right:2px;letter-spacing:-2px}
+.wbt{min-width:30px;height:30px;padding:0 8px;background:var(--s1);border:1px solid var(--ln);border-radius:8px;color:var(--tx);font-size:13px}
+.wbt:hover{border-color:var(--ac)}
+
+/* clocks */
+.tile{background:var(--s1);border:1px solid var(--ln);border-radius:var(--r);padding:8px 12px 9px;box-shadow:var(--sh)}
+.tile .lb{display:flex;justify-content:space-between;gap:6px;font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--mu);white-space:nowrap}
+.tile .lb span:first-child::before{content:'';display:inline-block;width:5px;height:5px;border-radius:2px;margin-right:6px;vertical-align:1px;background:var(--mu)}
+.tile.sg .lb span:first-child::before{background:var(--cy)}
+.tile.kr .lb span:first-child::before{background:var(--ac)}
+.tile .tm{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15;margin:2px 0 0;letter-spacing:-.3px}
+.tile .bar{margin-top:4px}
+.zone.strip{align-items:start}
+.tile .tm small{font-size:.55em;font-weight:600;margin-left:4px;color:var(--mu);letter-spacing:0}
+.tile.sg .tm{color:var(--cy)}.tile.kr .tm{color:var(--act)}
+.tile .dt{display:none}
+.bar{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--ac);border-radius:2px}
+.bar.b i{background:var(--cy)}
+
+/* panels */
+.panel{background:var(--s1);border:1px solid var(--ln);border-radius:var(--r);box-shadow:var(--sh)}
+.ph{display:flex;align-items:center;gap:8px;padding:6px 12px;min-height:40px;cursor:pointer;user-select:none;border-radius:var(--r)}
+.ph b{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--mu);font-weight:700;white-space:nowrap}
+.ph b::before{content:'';display:inline-block;width:5px;height:5px;border-radius:2px;background:var(--ac);margin-right:8px;vertical-align:1px}
+.ph .sum{flex:1;text-align:right;font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.chev{color:var(--mu);font-size:11px;transition:transform .15s;width:14px;text-align:center;flex:none}
+.panel.col .chev{transform:rotate(-90deg)}
+.panel.col .pb{display:none}
+.pb{padding:0 12px 12px}
+.tb{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.seg{display:inline-flex;background:var(--s2);border:1px solid var(--ln);border-radius:10px;padding:2px}
+.seg button{background:none;border:0;padding:3px 10px;min-height:28px;border-radius:8px;color:var(--mu);font-size:12px}
+.seg button.on{background:var(--ac);color:#1a1202;font-weight:700}
+.seg.full{display:flex}.seg.full button{flex:1;padding:5px 6px;font-size:13px}
+.chipsrow{display:flex;gap:5px;flex-wrap:wrap}
+.tg{background:transparent;border:1px solid var(--ln);border-radius:20px;padding:2px 10px;min-height:28px;font-size:12px;color:var(--mu)}
+.tg.on{color:var(--tx);border-color:color-mix(in srgb,var(--ac) 55%,var(--ln))}
+.tg.on::before{content:'\2713 ';color:var(--act)}
+
+/* checklist */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;align-items:start}
+.cc{background:var(--s2);border:1px solid var(--ln);border-radius:10px;overflow:hidden}
+.cc.ok{border-color:color-mix(in srgb,var(--ok) 45%,var(--ln))}
+.cch{display:flex;align-items:center;gap:9px;padding:8px 10px;cursor:pointer;min-height:50px}
+.cn{flex:1;min-width:0}.cn b{display:block;font-size:14px;line-height:1.2}.cn small{color:var(--mu);font-size:11.5px;white-space:nowrap}
+.ilb{color:var(--act);cursor:pointer;border-bottom:1px dotted currentColor}
+.ring{--p:0;width:32px;height:32px;border-radius:50%;background:conic-gradient(var(--ac) calc(var(--p)*1%),var(--s3) 0);display:grid;place-items:center;position:relative;flex:none}
+.ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--s2)}
+.ring i{position:relative;font-style:normal;font-size:9.5px;font-weight:700}
+.cb{--cc:var(--mu);width:32px;height:32px;border-radius:9px;display:inline-grid;place-items:center;flex:none;color:var(--cc);background:color-mix(in srgb,var(--cc) 14%,var(--s3));border:1px solid color-mix(in srgb,var(--cc) 38%,var(--ln))}
+.cb.sm{width:22px;height:22px;border-radius:7px}
+:root[data-theme=light] .cb{color:color-mix(in srgb,var(--cc) 72%,#000)}
+.cc.ok .ring{background:var(--ok)}.cc.ok .ring i{color:var(--ok)}
+.cs{display:flex;align-items:center;gap:6px;padding:4px 10px 0;font-size:10px;letter-spacing:1.1px;color:var(--mu);text-transform:uppercase}
+.cs span:first-child{flex:1}
+.cs button{font-size:11px;padding:1px 8px;min-height:22px;background:none;border:1px solid var(--ln);border-radius:7px;color:var(--mu);letter-spacing:0;text-transform:none}
+.cs button:hover{color:var(--tx);border-color:var(--mu)}
+.tks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px 8px 8px}
+.tk{display:flex;align-items:center;gap:6px;padding:3px 7px;border-radius:8px;min-height:34px;line-height:1.2;font-size:12.5px;cursor:pointer;user-select:none;border:1px solid transparent;
+ background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 24%,var(--s3)) var(--f,0%),var(--s3) var(--f,0%))}
+.tk:hover{border-color:var(--ln)}
+.bx{width:15px;height:15px;border-radius:5px;border:2px solid var(--mu);flex:none;display:grid;place-items:center;font-size:10px;font-style:normal;font-weight:900;color:#06241a}
+.tk span{flex:1;min-width:0;word-break:break-word}
+.tk em{font-style:normal;font-size:11px;color:var(--mu);font-variant-numeric:tabular-nums}
+.tk.done{background:color-mix(in srgb,var(--ok) 12%,var(--s3))}
+.tk.done .bx{background:var(--ok);border-color:var(--ok)}
+.tk.done span{color:var(--done-tx)}
+.alld{grid-column:1/-1;padding:4px 8px;color:var(--ok);font-size:12px}
+.er{grid-column:1/-1;display:flex;gap:6px}.er input:first-child{flex:1;min-width:0}.er input[type=number]{width:62px}
+.ft{display:flex;gap:6px;flex-wrap:wrap;padding:2px 10px 10px}
+.rt{display:flex;gap:8px;align-items:baseline;padding:5px 8px;border-radius:8px;font-size:12.5px;color:var(--mu)}
+.rt i{font-style:normal;width:14px;flex:none;text-align:center}
+.rt b{width:40px;flex:none;font-variant-numeric:tabular-nums}
+.rt span{flex:1;min-width:0}
+.rt.ok{color:var(--tx2)}.rt.ok i{color:var(--ok)}
+.rt.nx{background:color-mix(in srgb,var(--ac) 12%,var(--s2));color:var(--tx);box-shadow:inset 3px 0 0 var(--ac)}
+
+/* odyle */
+.od{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:6px}
+.od .n{font-size:22px;font-weight:700;color:var(--cy);font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.3px}
+.od .l{font-size:11px;color:var(--mu);margin-top:3px}
+.od .r{text-align:right}.od .r .n{font-size:16px;color:var(--ok)}
+.times{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;align-items:center}
+.times span{font-size:11px;padding:2px 7px;border-radius:7px;background:var(--s2);color:var(--mu);border:1px solid var(--ln)}
+.times span.nx{background:var(--cy);border-color:var(--cy);color:var(--on-cy);font-weight:700}
+.ghosts{display:flex;gap:16px;margin:0 0 2px}
+.gh{background:none;border:0;padding:4px 0;min-height:28px;color:var(--mu);font-size:12px}
+.gh:hover,.gh.on{color:var(--act)}
+.help{font-size:12.5px;color:var(--tx2);background:var(--s2);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;margin:6px 0;line-height:1.5}
+.help ul{margin:4px 0 0;padding-left:18px}
+.orow{padding:6px 0;border-top:1px solid var(--ln)}
+.orow .t1{display:flex;align-items:center;gap:7px}
+.orow .t1 b{width:58px;flex:none;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orow .t1 .bar{flex:1;margin:0}
+.orow .t1 input{width:62px;min-height:30px;padding:3px 8px;text-align:right;font-weight:700;color:var(--cy)}
+.orow .t2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px;font-size:11px;color:var(--mu)}
+.orow .t2 input{width:70px;min-height:24px;padding:1px 7px;font-size:11px}
+
+/* events */
+.ev{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:9px;background:var(--s2);margin-bottom:4px;border-left:3px solid var(--ln);position:relative;overflow:hidden;min-height:40px}
+.ev.live{border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--s2))}
+.ev.soon{border-left-color:var(--ac)}
+.ev.off{opacity:.45}
+.ev .ic{font-size:17px;width:22px;text-align:center;flex:none}
+.ev .n{flex:1;min-width:0;line-height:1.25}
+.ev .n b{font-size:13px}
+.ev .n div{font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev .t{font-weight:700;font-variant-numeric:tabular-nums;font-size:13px;text-align:right;white-space:nowrap}
+.tag{font-size:9px;padding:1px 5px;border-radius:5px;background:var(--ok);color:#052a1c;margin-left:6px;font-weight:800;vertical-align:1px}
+.ev .lp{position:absolute;left:0;bottom:0;height:2px;background:var(--ok)}
+
+/* links */
+.lk{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.lk .li{display:flex;gap:6px}
+.lk a{flex:1;display:flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;min-height:44px;text-decoration:none;font-size:13px;min-width:0}
+.lk a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lk a:hover{border-color:var(--ac)}
+.lk a.map{border-color:color-mix(in srgb,var(--ac) 50%,var(--ln))}
+
+/* build guide */
+.bt{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.bt input{flex:1;min-width:150px}
+.bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.br{background:var(--s2);border:1px solid var(--ln);border-radius:10px;padding:10px 12px}
+.br>b{display:block;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--act);margin-bottom:7px}
+.br.hid{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips.list{flex-direction:column}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--s3);border-radius:7px;padding:3px 9px;font-size:13px}
+.chip i{font-style:normal;font-size:10px;font-weight:800;color:var(--cy);min-width:10px;text-align:center}
+.chip.o{opacity:.55}
+.bn{font-size:13px;color:var(--tx2);background:var(--s2);border-left:3px solid var(--ac);border-radius:6px;padding:8px 12px;margin-top:8px}
+.bl{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--mu);margin:14px 0 6px}
+.empty{text-align:center;color:var(--mu);padding:60px 10px}
+
+/* side menu */
+.scrim{position:fixed;inset:0;background:rgba(5,8,14,.55);z-index:40;opacity:0;transition:opacity .2s}
+.scrim.open{opacity:1}
+.side{position:fixed;top:0;left:0;bottom:0;width:min(340px,88vw);background:var(--s1);border-right:1px solid var(--ln);z-index:50;display:flex;flex-direction:column;transform:translateX(-102%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s;box-shadow:0 0 40px rgba(0,0,0,.35)}
+.side.open{transform:none;visibility:visible;transition:transform .22s ease}
+.sh{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--ln);min-height:var(--th)}
+.sht{flex:1;min-width:0;line-height:1.2}.sht b{display:block;font-size:15px}.sht small{color:var(--mu);font-size:12px}
+.sb{flex:1;overflow:auto;padding:6px 16px 16px;overscroll-behavior:contain}
+.msec{padding:14px 0;border-bottom:1px solid var(--ln)}
+.msec:last-child{border-bottom:0}
+.msec h4{margin:0 0 10px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);font-weight:700}
+.gl{font-size:12px;color:var(--mu);margin:10px 0 2px}
+.hint{font-size:12px;color:var(--mu);margin:8px 0;line-height:1.45}
+.sw-row{display:flex;align-items:center;gap:10px;padding:6px 0;min-height:42px;cursor:pointer}
+.sw-row span{flex:1}
+.sw-row input{appearance:none;-webkit-appearance:none;width:42px;height:24px;min-height:0;padding:0;border-radius:13px;background:var(--s3);border:1px solid var(--ln);position:relative;cursor:pointer;flex:none;transition:background .15s}
+.sw-row input::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--mu);transition:transform .15s,background .15s}
+.sw-row input:checked{background:color-mix(in srgb,var(--ac) 30%,var(--s3));border-color:var(--ac)}
+.sw-row input:checked::after{transform:translateX(18px);background:var(--ac)}
+.sw-row select,.sw-row input[type=number]{appearance:auto;-webkit-appearance:auto;width:auto;height:auto;border-radius:9px;background:var(--bg);position:static}
+.sw-row input[type=number]{width:84px}
+.sw-row input[type=number]::after{display:none}
+.lnk{background:none;border:0;color:var(--act);padding:6px 0;font-size:13px}
+.swatches{display:flex;gap:10px;margin-top:6px}
+.swt{width:32px;height:32px;border-radius:50%;border:2px solid transparent;padding:0;box-shadow:0 0 0 1px var(--ln)}
+.swt.on{border-color:var(--tx)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.sf{padding:12px 16px;border-top:1px solid var(--ln);display:flex;flex-direction:column;gap:8px}
+.sf small{color:var(--mu);font-size:11px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px}
+
+@media(max-width:1000px){#cols{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.wrap{padding:10px 10px 48px}.top-in{padding:0 10px}.zone.strip{grid-template-columns:repeat(2,minmax(0,1fr))}.cgrid{grid-template-columns:minmax(0,1fr)}.pb{padding:2px 10px 12px}.bg{grid-template-columns:minmax(0,1fr)}.tile .lb span:last-child{display:none}}
+@media(max-width:480px){.hm{display:none}h1{letter-spacing:2px;font-size:15px}}
+@media(max-width:380px){.tks{grid-template-columns:minmax(0,1fr)}}
+@media(pointer:coarse){.tk{min-height:48px}.btn{min-height:42px}.btn.sm{min-height:36px}.tg{min-height:38px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+ <button class="ib" id="bMenu" data-a="menu" aria-label="Open menu" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+ <div class="brand"><span id="brandLogo"></span><h1><b>TOP1</b> TRACKER</h1></div>
+ <span class="sp"></span>
+ <button class="ib" id="bTheme" data-a="theme" aria-label="Switch theme"></button>
+ <button class="btn" id="bEdit" data-a="edit"></button>
+</div></header>
+<div class="lbar" id="lbar" hidden><div class="lbar-in" id="lbarIn"></div></div>
+<main class="wrap">
+ <div class="zones" id="zones">
+  <div class="zone strip" data-z="strip"></div>
+  <div id="cols"><div class="zone" data-z="c1"></div><div class="zone" data-z="c2"></div><div class="zone" data-z="c3"></div></div>
+ </div>
+ <div class="empty" id="empty" hidden>All widgets are hidden.<br>Open the menu (☰) and switch some back on.</div>
+</main>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="side" id="side" aria-label="Main menu"></aside>
+<input type="file" id="impf" accept=".json" hidden>
+
+<script>
+(()=>{
+const H=3600000,D=24*H,KST=9*H,RESET_OFF=7*H; // daily reset 16:00 KST = 07:00 UTC
+const KEY='top1tracker.v2';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const p2=n=>String(n).padStart(2,'0');
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+const LOGO='<svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs><path d="M16 2.5 27 8.8v12.4L16 29.5 5 21.2V8.8z" fill="none" stroke="url(#lg)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 12.5h10M16 12.5v8.5" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/></svg>';
+const ICON={
+ sun:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ moon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>',
+ x:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+
+/* ---------- Events (KST), source: shugo.gg (Asia) ---------- */
+const hrs=(...h)=>h.map(x=>x*60);
+const ALLH=[...Array(24).keys()];
+const EVENTS=[
+ {n:'Spacetime Rift',i:'🌀',t:hrs(2,5,8,11,14,17,20,23),d:60,note:'Portal open for the first 10 min'},
+ {n:'Shugo Festival',i:'🎉',t:ALLH.map(h=>h*60),d:10},
+ {n:'Dimensional Invasion',i:'⚡',t:ALLH.map(h=>h*60+30),d:15},
+ {n:'Watcher Kaira',i:'👁',t:hrs(1,4,7,10,13,16,19,22),d:30},
+ {n:'Argo, the Spirit King',i:'👑',t:[630,1350],d:30},
+ {n:'Battlefield',i:'⚔',t:hrs(11,19),d:120},
+ {n:'Guardian Lord Nahma',i:'🐉',t:[1260],d:30,days:[5,0],note:'Fri & Sun'},
+ {n:'Artifact Siege',i:'🏰',t:[1260],d:30,days:[4,6],note:'Thu & Sat'},
+ {n:'Siege Bosses',i:'💀',t:[1290],d:30,days:[4,6],note:'Thu & Sat'},
+];
+function occ(ev,from,to){
+  const out=[],d0=Math.floor((from+KST)/D)-1,d1=Math.floor((to+KST)/D)+1;
+  for(let d=d0;d<=d1;d++){
+    const dow=new Date(d*D).getUTCDay();
+    if(ev.days&&!ev.days.includes(dow))continue;
+    for(const m of ev.t){const s=d*D+m*60000-KST,e=s+ev.d*60000;if(e>from&&s<to)out.push([s,e])}
+  }
+  return out;
+}
+function status(ev,now){
+  const l=occ(ev,now-H,now+8*D).sort((a,b)=>a[0]-b[0]);
+  return {live:l.find(o=>o[0]<=now&&o[1]>now),next:l.find(o=>o[0]>now)};
+}
+function sortedEvents(now){
+  return EVENTS.map(ev=>({ev,s:status(ev,now)})).filter(x=>x.s.live||x.s.next)
+   .sort((a,b)=>(a.s.live?a.s.live[1]:a.s.next[0])-(b.s.live?b.s.live[1]:b.s.next[0]));
+}
+
+/* ---------- Widgets & layout ---------- */
+const NAME={sgt:'Singapore time',kst:'Server time (KST)',daily:'Daily reset',weekly:'Weekly reset',check:'Checklist',odyle:'Odyle Energy',events:'Events',build:'Build Guide',route:'Item Level Route',links:'Quick Links'};
+const GROUPS=[['Clocks',['sgt','kst','daily','weekly']],['Tracking',['check','odyle','events']],['Reference',['build','route','links']]];
+const ALLW=Object.keys(NAME),TILES=['sgt','kst','daily','weekly'];
+const ZONES=['strip','c1','c2','c3'];
+const ZN={strip:'Top strip',c1:'Column 1',c2:'Column 2',c3:'Column 3'};
+const PRESETS={
+ default:{layout:{strip:[...TILES],c1:['check','build'],c2:['odyle','events','route','links'],c3:[]},colw:{c1:1.7,c2:1,c3:1}},
+ three:{layout:{strip:[...TILES],c1:['check'],c2:['odyle','events'],c3:['build','route','links']},colw:{c1:1.5,c2:1,c3:1}},
+ single:{layout:{strip:[...TILES],c1:['check','odyle','events','build','route','links'],c2:[],c3:[]},colw:{c1:1,c2:1,c3:1}}};
+const WIDTHS=[[1,'Narrow'],[1.7,'Wide'],[2.4,'Extra wide']];
+const wlabel=v=>(WIDTHS.find(w=>w[0]===v)||WIDTHS[0])[1];
+
+/* ---------- State ---------- */
+const NV=8;
+const CL={
+ Ranger:{c:'#3ddc97',p:'<path d="M6 3c11 3 11 15 0 18"/><path d="M6 3v18"/><path d="M3 12h17M17 9l3 3-3 3"/>'},
+ Chanter:{c:'#4cc9f0',p:'<path d="M12 21V9"/><circle cx="12" cy="6" r="3"/><path d="M6 5c-1.5 2-1.5 4 0 6M18 5c1.5 2 1.5 4 0 6"/>'},
+ Gladiator:{c:'#ff7a7a',p:'<path d="M4 20 18 6M14 4h6v6"/><path d="M20 20 6 6M10 4H4v6"/>'},
+ Cleric:{c:'#f5b942',p:'<circle cx="12" cy="12" r="9"/><path d="M12 6v12M7.5 10.5h9"/>'},
+ Templar:{c:'#7aa2ff',p:'<path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/>'},
+ Assassin:{c:'#a78bfa',p:'<path d="M12 3l3 9-3 3-3-3z"/><path d="M12 15v6M9 18h6"/>'},
+ Sorcerer:{c:'#fb7185',p:'<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>'},
+ Spiritmaster:{c:'#c084fc',p:'<path d="M12 4a8 8 0 1 0 8 8"/><path d="M12 8a4 4 0 1 0 4 4"/><circle cx="12" cy="12" r=".8"/>'},
+ _:{c:'#808ba3',p:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/>'}};
+
+const clsIcon=(cls,sz=22,x='')=>{const k=CL[cls]||CL._;return `<span class="cb ${x}" style="--cc:${k.c}" title="${esc(cls||'No class set')}"><svg viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${k.p}</svg></span>`};
+const T=(name,max=1,min,g)=>{if(max>1&&!/×|Ludra/.test(name))name+=' ×'+max;const t={id:uid(),name,max:1,count:0};if(min)t.min=min;if(g)t.g=g;return t};
+const PVP=()=>[T('Solo Arena Wins',30,0,'pvp'),T('Solo Arena Participation',10,0,'pvp'),T('Coop Arena Wins',30,0,'pvp'),T('Coop Arena Participation',10,0,'pvp'),T('Battlefield Wins',3,0,'pvp'),T('Battlefield Participation',3,0,'pvp')];
+const stdChar=()=>({daily:[T('Daily Supply Request'),T('Nightmare ×2')],weekly:[T('Ascension Trials',3,1000),T('Way of the Transcended',3,1600),T('Sanctuary: Ludra',1,2800),T('Odyle Energy Craft',4),T('Windbreeze Odyle Energy',4),T('Weekly Supply Request'),...PVP()]});
+const acctDefault=()=>({id:'acct',name:'Account',daily:[T('Daily Duty Quest ×5'),T('Attendance Reward')],weekly:[T('Unknown Fissure – Dungeon',14),T('Dimensional Invasion Key',7),T('Shugo Festival Keys',21),T('Odyle Energy Craft ×16',16),T('Windbreeze Odyle Energy ×16',16),T('Abyss Order Scrolls',20)]});
+const DEFLINKS=()=>[
+ {id:uid(),name:'Altgard Map',url:'https://interactivemap.app/aion2/maps/altgard',map:true,ic:'🗺'},
+ {id:uid(),name:'Shugo.gg',url:'https://shugo.gg/',ic:'⏱'},
+ {id:uid(),name:'Ranger Guide',url:'https://aion2-guides.info/en/ranger/',ic:'🏹'},
+ {id:uid(),name:'Facebook',url:'https://facebook.com/',ic:'📘'},
+ {id:uid(),name:'YouTube',url:'https://www.youtube.com/',ic:'▶️'},
+ {id:uid(),name:'Twitch',url:'https://www.twitch.tv/',ic:'🟣'}];
+function defaults(){
+  const mk=(name,energy,charged,x)=>({id:uid(),name,cls:'',il:0,energy,energyAt:Date.now(),charged,...(x||stdChar())});
+  return {nv:NV,cap:840,hour12:true,tz:'sg',anchor:null,accent:'#f5b942',theme:'dark',show:'both',hideDone:false,showPvp:false,evAll:false,help:false,syncOpen:false,odCompact:true,routeChar:null,
+   layout:clone(PRESETS.default.layout),colw:clone(PRESETS.default.colw),
+   dailyId:dayId(Date.now()),weeklyId:weekId(Date.now()),hidden:{route:true},charHidden:{},collapsed:{build:true},hiddenEv:[],build:{cls:'Ranger',tab:'gear'},
+   acct:acctDefault(),
+   chars:[mk('Character 1',0,0)],
+   links:DEFLINKS()};
+}
+function dayId(t){return Math.floor((t-RESET_OFF)/D)}
+function weekId(t){return Math.floor((t-6*D-RESET_OFF)/(7*D))} // Wed 16:00 KST
+const nextDaily=t=>(dayId(t)+1)*D+RESET_OFF;
+const nextWeekly=t=>(weekId(t)+1)*7*D+6*D+RESET_OFF;
+const normUrl=u=>u.replace(/\/+$/,'').replace(/^https?:\/\/(www\.)?/,'');
+let S,raw=null;
+try{raw=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!raw||!raw.chars){
+  raw=null;
+  try{const o=JSON.parse(localStorage.getItem('aion2hub.v1'));
+    if(o&&o.chars)raw={chars:o.chars,cap:o.cap,hour12:o.hour12!==false,anchor:o.anchor??null,dailyId:o.dailyId,weeklyId:o.weeklyId,links:(o.links||[]).map(l=>({id:l.id,name:l.name,url:l.url,map:/interactivemap/.test(l.url)}))}}catch(e){}
+}
+function migrate(r){
+  const nv=r.nv||0;
+  if(nv<3){
+    (r.chars||[]).forEach(c=>(c.weekly||[]).forEach(t=>{
+      const m=/^(Odyle Energy Craft|Windbreeze Odyle Energy) \((4|16)\)$/.exec(t.name);
+      if(m){t.name=m[2]==='4'?m[1]:m[1]+' ×16';t.max=+m[2];t.count=0}
+    }));
+    if(r.build&&r.build.cls==='Sorc')r.build.cls='Sorcerer';
+  }
+  if(nv<4){
+    (r.chars||[]).forEach(c=>(c.daily||[]).forEach(t=>{
+      const m=/^(Daily Duty Quest|Nightmare)\b/.exec(t.name);
+      if(m){const was=t.count>=t.max;t.name=m[1]+(m[1]==='Nightmare'?' ×2':' ×5');t.max=1;t.count=was?1:0}
+    }));
+    r.links=(r.links||[]).filter(l=>!/metaroad\.gg/.test(l.url)&&!/docs\.google\.com\/spreadsheets/.test(l.url));
+    r.links.forEach(l=>{if(['shugo.gg/timers','shugo.gg'].includes(normUrl(l.url))){l.url='https://shugo.gg/';l.name='Shugo.gg'}});
+    const have=r.links.map(l=>normUrl(l.url));
+    DEFLINKS().forEach(l=>{if(!have.includes(normUrl(l.url)))r.links.push(l)});
+  }
+  if(nv<5){
+    r.hidden=r.hidden||{};
+    if(r.hidden.clocks){TILES.forEach(k=>r.hidden[k]=true)}
+    delete r.hidden.clocks;
+  }
+  if(nv<6){
+    (r.chars||[]).forEach(c=>{
+      if(c.cls===undefined)c.cls='';
+      (c.daily||[]).forEach(t=>{if(t.name==='Gather 1,000')t.name='1,000 Gather';if(t.name==='Kinah 1M')t.name='1M Kinah'});
+    });
+  }
+  if(nv<7){
+    r.acct=r.acct||acctDefault();
+    const A=r.acct;
+    const pull=(c,k,re,an)=>{const i=c[k].findIndex(t=>re.test(t.name));if(i<0)return;const t=c[k].splice(i,1)[0],a=A[k].find(x=>x.name===an);if(a)a.count=Math.max(a.count,Math.min(a.max,t.count))};
+    const add=(c,name,max,min)=>{if(!c.weekly.some(t=>t.name.toLowerCase().includes(name.toLowerCase())))c.weekly.push(T(name,max,min))};
+    (r.chars||[]).forEach(c=>{
+      c.daily=c.daily||[];c.weekly=c.weekly||[];c.il=c.il||0;
+      pull(c,'daily',/^Daily Duty Quest/,'Daily Duty Quest ×5');
+      pull(c,'weekly',/^Odyle Energy Craft ×16$/,'Odyle Energy Craft ×16');
+      pull(c,'weekly',/^Windbreeze Odyle Energy ×16$/,'Windbreeze Odyle Energy ×16');
+      pull(c,'weekly',/^Unknown Fissure/,'Unknown Fissure – Dungeon');
+      const asc=c.weekly.find(t=>/^Ascension Trial/i.test(t.name));if(asc){asc.max=Math.max(asc.max,3);asc.min=asc.min||1000}
+      add(c,'Way of the Transcended',3,1600);add(c,'Sanctuary: Ludra',1,2800);
+      if(!c.weekly.some(t=>t.g==='pvp'))c.weekly.push(...PVP());
+    });
+    r.collapsed=r.collapsed||{};if(r.collapsed.build===undefined)r.collapsed.build=true;
+    r.hidden=r.hidden||{};if(r.hidden.route===undefined)r.hidden.route=true;
+    r.odCompact=true;
+  }
+  if(nv<8){
+    const fix=c=>['daily','weekly'].forEach(k=>(c[k]||[]).forEach(t=>{
+      const full=t.count>=t.max;
+      if(/Ludra/.test(t.name))t.name='Sanctuary: Ludra';
+      else if(t.max>1&&!/×/.test(t.name))t.name+=' ×'+t.max;
+      t.max=1;t.count=full?1:0;
+    }));
+    (r.chars||[]).forEach(fix);if(r.acct)fix(r.acct);
+  }
+  r.nv=NV;return r;
+}
+S=Object.assign(defaults(),raw?migrate(raw):{});
+function normLayout(){
+  const L=S.layout&&typeof S.layout==='object'?S.layout:{},seen=new Set(),out={strip:[],c1:[],c2:[],c3:[]};
+  ZONES.forEach(z=>(Array.isArray(L[z])?L[z]:[]).forEach(id=>{if(ALLW.includes(id)&&!seen.has(id)){seen.add(id);out[z].push(id)}}));
+  const def=PRESETS.default.layout;
+  ALLW.forEach(id=>{if(!seen.has(id))out[ZONES.find(z=>def[z].includes(id))].push(id)});
+  S.layout=out;S.colw=Object.assign({c1:1.7,c2:1,c3:1},S.colw||{});
+}
+normLayout();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+function checkReset(){
+  const n=Date.now();let ch=false;
+  const all=[...S.chars,S.acct];
+  if(S.dailyId!==dayId(n)){all.forEach(c=>c.daily.forEach(t=>t.count=0));S.dailyId=dayId(n);ch=true}
+  if(S.weeklyId!==weekId(n)){all.forEach(c=>c.weekly.forEach(t=>t.count=0));S.weeklyId=weekId(n);ch=true}
+  if(ch)save();return ch;
+}
+
+/* ---------- Theme ---------- */
+const mq=matchMedia('(prefers-color-scheme: light)');
+const theme=()=>S.theme==='auto'?(mq.matches?'light':'dark'):S.theme;
+function applyTheme(){
+  const t=theme();
+  document.documentElement.dataset.theme=t;
+  document.documentElement.style.setProperty('--ac',S.accent||'#f5b942');
+  $('meta[name=theme-color]').content=t==='light'?'#f2f4f8':'#0b0e14';
+  $('#bTheme').innerHTML=t==='light'?ICON.moon:ICON.sun;
+  $('#bTheme').setAttribute('aria-label',t==='light'?'Switch to dark theme':'Switch to light theme');
+}
+if(mq.addEventListener)mq.addEventListener('change',()=>{if(S.theme==='auto')applyTheme()});
+
+/* ---------- Odyle energy ---------- */
+const TICK=3*H,GAIN=15;
+const anchor=()=>S.anchor??RESET_OFF;
+const ticksBetween=(a,b)=>Math.floor((b-anchor())/TICK)-Math.floor((a-anchor())/TICK);
+const curEnergy=(c,now=Date.now())=>Math.max(0,Math.min(S.cap,c.energy>=S.cap?c.energy:c.energy+GAIN*Math.max(0,ticksBetween(c.energyAt,now))));
+const nextTick=(now=Date.now())=>(Math.floor((now-anchor())/TICK)+1)*TICK+anchor();
+function fullAt(c,now){const e=curEnergy(c,now);if(e>=S.cap)return null;return nextTick(now)+(Math.ceil((S.cap-e)/GAIN)-1)*TICK}
+function setEnergy(c,v){c.energy=Math.max(0,Math.round(v));c.energyAt=Date.now()}
+
+/* ---------- Time helpers ---------- */
+const TZ=()=>S.tz==='local'?undefined:'Asia/Singapore';
+const TZL=()=>S.tz==='local'?'local time':'SGT';
+const fc={};
+function F(tz,o){const k=tz+JSON.stringify(o);return fc[k]||(fc[k]=new Intl.DateTimeFormat('en-US',{...o,timeZone:tz}))}
+const hc=()=>({hour:S.hour12?'numeric':'2-digit',minute:'2-digit',hourCycle:S.hour12?'h12':'h23'});
+const tod=(t,tz=TZ())=>F(tz,hc()).format(t);
+const todS=(t,tz)=>F(tz,{...hc(),second:'2-digit'}).format(t);
+const dayName=(t,tz=TZ())=>F(tz,{weekday:'short'}).format(t);
+const dkey=(t,tz=TZ())=>F(tz,{year:'numeric',month:'2-digit',day:'2-digit'}).format(t);
+const whenLabel=(t,now)=>(dkey(t)===dkey(now)?'':dayName(t)+' ')+tod(t);
+function dur(ms,sec){
+  ms=Math.max(0,ms);const s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+  if(d)return `${d}d ${h}h ${p2(m)}m`;
+  if(h)return `${h}h ${p2(m)}m`+(sec?` ${p2(x)}s`:'');
+  return `${m}m ${p2(x)}s`;
+}
+const hms=ms=>{const s=Math.max(0,Math.floor(ms/1000));return `${p2(Math.floor(s/3600))}:${p2(Math.floor(s%3600/60))}:${p2(s%60)}`};
+function bigTime(t,tz){const s=todS(t,tz),m=s.match(/^(.*?)\s?(AM|PM)$/);return m?`${m[1]}<small>${m[2]}</small>`:s}
+const cd=(ts,fmt)=>`<span data-cd="${ts}" ${fmt?`data-f="${fmt}"`:''}></span>`;
+
+/* ---------- Widgets ---------- */
+let edit=false,layoutMode=false;
+const col=id=>!!S.collapsed[id];
+function panel(id,title,sum,body,acts=''){
+  return `<section class="panel ${col(id)?'col':''}"><div class="ph" data-c="${id}" role="button" tabindex="0" aria-expanded="${!col(id)}"><b>${title}</b><span class="sum">${sum||''}</span>${acts}<span class="chev">▾</span></div><div class="pb">${body}</div></section>`;
+}
+const prog=a=>{let d=0;a.forEach(x=>{if(x.count>=x.max)d++});return [d,a.length]};
+const shownChars=()=>S.chars.filter(c=>!S.charHidden[c.id]);
+
+const rSgt=()=>`<div class="tile sg"><div class="lb"><span>Singapore</span><span>SGT · UTC+8</span></div><div class="tm" data-clk="Asia/Singapore"></div><div class="dt" data-dt="Asia/Singapore"></div></div>`;
+const rKst=()=>`<div class="tile kr"><div class="lb"><span>Aion 2 Server</span><span>KST · UTC+9</span></div><div class="tm" data-clk="Asia/Seoul"></div><div class="dt" data-dt="Asia/Seoul"></div></div>`;
+function rDaily(){const dN=nextDaily(Date.now());return `<div class="tile"><div class="lb"><span>Daily Reset</span><span>${tod(dN)} ${TZL()}</span></div><div class="tm">${cd(dN)}</div><div class="bar"><i data-pr="d"></i></div></div>`}
+function rWeekly(){const wN=nextWeekly(Date.now());return `<div class="tile"><div class="lb"><span>Weekly Reset</span><span>${dayName(wN)} ${tod(wN)} ${TZL()}</span></div><div class="tm">${cd(wN)}</div><div class="bar b"><i data-pr="w"></i></div></div>`}
+
+const vis=(c,k)=>c[k].filter(t=>edit||((!t.g||S.showPvp)&&(!t.min||!c.il||c.il>=t.min)));
+function taskRow(t,k,cid){
+  const done=t.count>=t.max;
+  return `<div class="tk ${done?'done':''}" data-a="tk" data-v="${k}|${cid}|${t.id}" role="checkbox" aria-checked="${done}" tabindex="0"><i class="bx">${done?'✓':''}</i><span>${esc(t.name)}</span></div>`;
+}
+function section(c,k){
+  const items=vis(c,k),[d,t]=prog(items),list=items;
+  const label=k==='daily'?'Daily':'Weekly';
+  const head=`<div class="cs"><span>${label} · ${d}/${t}</span></div>`;
+  if(edit)return head+`<div class="tks">${c[k].map(x=>`<div class="er"><input value="${esc(x.name)}" data-rn="${k}|${c.id}|${x.id}" aria-label="Task name"><button class="btn dg sm" data-a="deltask" data-v="${k}|${c.id}|${x.id}" aria-label="Remove task">✕</button></div>`).join('')}<div class="er"><button class="btn sm" data-a="addtask" data-v="${k}|${c.id}">＋ Add ${label.toLowerCase()} task</button></div></div>`;
+  return head+`<div class="tks">${list.map(x=>taskRow(x,k,c.id)).join('')||'<div class="alld">✓ All done</div>'}</div>`;
+}
+const GLOBE='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>';
+function card(c){
+  const isA=c.id==='acct';
+  const d=prog(vis(c,'daily')),w=prog(vis(c,'weekly'));
+  const shown=S.show==='both'?[d[0]+w[0],d[1]+w[1]]:S.show==='daily'?d:w;
+  const done=shown[1]>0&&shown[0]>=shown[1];
+  const closed=col('c-'+c.id)&&!edit;
+  const badge=isA?`<span class="cb" style="--cc:var(--cy)" title="Shared by all characters">${GLOBE}</span>`:clsIcon(c.cls,18);
+  const sub=(isA?'Shared · all characters':`${c.cls?esc(c.cls)+' · ':''}<span class="ilb" data-a="il" data-v="${c.id}" role="button" tabindex="0" title="Set item level">IL ${c.il||'—'}</span>`)+` · ${shown[0]}/${shown[1]}`;
+  return `<div class="cc ${done?'ok':''}"><div class="cch" data-c="c-${c.id}" role="button" tabindex="0">${badge}<div class="cn"><b>${esc(c.name)}</b><small>${sub}</small></div><span class="ring" style="--p:${shown[1]?shown[0]/shown[1]*100:0}"><i>${done?'✓':(shown[1]?Math.round(shown[0]/shown[1]*100):0)+'%'}</i></span><span class="chev" style="transform:${closed?'rotate(-90deg)':'none'}">▾</span></div>
+   ${closed?'':(S.show!=='weekly'?section(c,'daily'):'')+(S.show!=='daily'?section(c,'weekly'):'')}
+   ${edit&&!isA?`<div class="ft"><select data-cls="${c.id}" aria-label="Class of ${esc(c.name)}"><option value="">No class</option>${Object.keys(CL).filter(k=>k!=='_').map(k=>`<option ${c.cls===k?'selected':''}>${k}</option>`).join('')}</select><button class="btn sm" data-a="renchar" data-v="${c.id}">Rename</button><button class="btn sm dg" data-a="delchar" data-v="${c.id}">Delete</button></div>`:''}</div>`;
+}
+function rCheck(){
+  const all=[S.acct,...S.chars],cards=all.filter(c=>!S.charHidden[c.id]);
+  const tot=cards.reduce((a,c)=>{const d=prog(vis(c,'daily')),w=prog(vis(c,'weekly'));a[0]+=d[0];a[1]+=d[1];a[2]+=w[0];a[3]+=w[1];return a},[0,0,0,0]);
+  const body=`<div class="tb">
+    <div class="seg">${[['both','Both'],['daily','Daily'],['weekly','Weekly']].map(([v,l])=>`<button class="${S.show===v?'on':''}" data-a="show" data-v="${v}">${l}</button>`).join('')}</div>
+    <span class="sp"></span>${edit?'<button class="btn sm" data-a="addchar">＋ Character</button>':''}</div>
+   ${edit?'<div class="muted" style="margin-bottom:8px">Editing: rename or remove tasks. Tap Done when finished.</div>':''}
+   <div class="cgrid">${cards.map(card).join('')||'<div class="muted">Nothing shown. Tap a name above to show it.</div>'}</div>`;
+  return panel('check','Checklist',`Daily ${tot[0]}/${tot[1]} · Weekly ${tot[2]}/${tot[3]}`,body);
+}
+function rOdyle(){
+  const now=Date.now(),nt=nextTick(now);
+  const times=[...Array(8)].map((_,i)=>`<span class="${i?'':'nx'}">${tod(nt+i*TICK)}</span>`).join('');
+  const body=`
+   <div class="od"><div><div class="n">${cd(nt,'hms')}</div><div class="l">until next +${GAIN}</div></div>
+     <div class="r"><div class="n">+120</div><div class="l">per day</div></div></div>
+   ${S.odCompact?'':`<div class="muted" style="margin-bottom:5px">Next +${GAIN} arrives at (${TZL()}):</div><div class="times">${times}</div>`}
+   <div class="ghosts"><button class="gh ${S.syncOpen?'on':''}" data-a="syncopen">Sync timer</button></div>
+   ${S.syncOpen?`<div class="help"><div>How many minutes are left in the game until your next +${GAIN}?</div><div class="tb" style="margin:10px 0 0"><input type="number" min="0" max="180" id="syncMin" placeholder="Minutes left" aria-label="Minutes until next energy"><button class="btn sm on" data-a="sync">Set</button></div></div>`:''}
+   ${shownChars().map(c=>{const e=curEnergy(c,now),f=fullAt(c,now);
+     return `<div class="orow"><div class="t1">${clsIcon(c.cls,13,'sm')}<b>${esc(c.name)}</b><div class="bar b"><i style="width:${Math.min(100,e/S.cap*100)}%"></i></div><input type="number" min="0" value="${e}" data-eset="${c.id}" aria-label="${esc(c.name)} energy"><span class="muted">/${S.cap}</span></div>
+      <div class="t2"><span>${f?'Full in '+dur(f-now):'Full'}</span><span>Charged <input type="number" min="0" value="${c.charged||0}" data-charged="${c.id}" aria-label="${esc(c.name)} charged energy"></span></div></div>`}).join('')||'<div class="muted">No characters shown.</div>'}`;
+  return panel('odyle','Odyle Energy',`Next +${GAIN} in ${cd(nt,'hms')}`,body);
+}
+function evRows(now){
+  let list=sortedEvents(now);
+  if(!edit)list=list.filter(x=>!S.hiddenEv.includes(x.ev.n));
+  if(!S.evAll&&!edit)list=list.slice(0,6);
+  return list.map(({ev,s})=>{
+    const live=s.live,off=S.hiddenEv.includes(ev.n);
+    const soon=!live&&s.next[0]-now<10*60000;
+    const pr=live?Math.min(100,(now-live[0])/(live[1]-live[0])*100):0;
+    return `<div class="ev ${live?'live':soon?'soon':''} ${off?'off':''}"><div class="ic">${ev.i}</div>
+     <div class="n"><b>${esc(ev.n)}${live?'<span class="tag">LIVE</span>':''}</b><div>${live?'Ends '+tod(live[1]):'Starts '+whenLabel(s.next[0],now)}${ev.note?' · '+esc(ev.note):''}</div></div>
+     <div class="t">${cd(live?live[1]:s.next[0])}</div>
+     ${edit?`<button class="btn sm" data-a="evhide" data-v="${esc(ev.n)}">${off?'Show':'Hide'}</button>`:''}${live?`<div class="lp" style="width:${pr}%"></div>`:''}</div>`}).join('');
+}
+function rEvents(){
+  const now=Date.now(),first=sortedEvents(now).filter(x=>!S.hiddenEv.includes(x.ev.n))[0];
+  const sum=first?`${esc(first.ev.n)} · ${cd(first.s.live?first.s.live[1]:first.s.next[0])}`:'';
+  const body=evRows(now)+`<div class="tb" style="margin:8px 0 0"><button class="btn sm" data-a="evall">${S.evAll?'Show fewer':'Show all events'}</button><span class="sp"></span><span class="muted">Times in ${TZL()}</span></div>`;
+  return panel('events','Events',sum,body);
+}
+function rLinks(){
+  const body=`<div class="lk">${S.links.map(l=>`<div class="li"><a class="${l.map?'map':''}" href="${esc(l.url)}" target="_blank" rel="noopener"><span>${l.ic||'🔗'}</span><span>${esc(l.name)}</span></a>${edit?`<button class="btn dg sm" data-a="dellink" data-v="${l.id}" aria-label="Remove link">✕</button>`:''}</div>`).join('')}</div>
+   ${edit?'<div class="tb" style="margin:10px 0 0"><button class="btn sm" data-a="addlink">＋ Add link</button></div>':''}`;
+  return panel('links','Quick Links','',body);
+}
+const ROUTE=[[700,'Krao Cave Conquest, Draupnir'],[1000,'Ascension Trial: Easy'],[1400,'Vakron Sky Island, Urugugu Canyon Conquest'],[1500,'Ascension Trial: Normal'],[1600,'★1 Transcendence: Deus Research Base, Shattered Arkanis'],[1900,'★2 Transcendence'],[2000,'Ascension Trial: Hard'],[2100,'Ferocious Horn Den, Fire Temple Conquest'],[2200,'★3 Transcendence'],[2500,'★4 Transcendence, Ascension Trial: Extreme'],[2700,'Urugugu Canyon, Vakron Sky Island: Hard'],[2800,"Dying Dramata's Nest, Cradle of Nihility; Fire Temple, Ferocious Horn Den: Hard; Ludra raid: Normal"],[3000,'Hall of Illusion, Azure Breath Island; Ludra raid: Hard'],[3500,'Corroded Decontamination Facility (raid)']];
+function rRoute(){
+  const c=S.chars.find(x=>x.id===S.routeChar)||S.chars[0];
+  if(!c)return panel('route','Item Level Route','','<div class="muted">No characters.</div>');
+  const il=c.il||0,nx=ROUTE.findIndex(r=>r[0]>il);
+  const rows=ROUTE.map((r,i)=>{const open=il>=r[0];return `<div class="rt ${open?'ok':(i===nx&&il?'nx':'')}"><i>${open?'✓':'○'}</i><b>${r[0]}</b><span>${esc(r[1])}</span></div>`}).join('');
+  const body=`<div class="tb"><div class="seg">${S.chars.map(x=>`<button class="${x.id===c.id?'on':''}" data-a="rchar" data-v="${x.id}">${esc(x.name)}</button>`).join('')}</div>
+    <label class="muted">Item level <input type="number" min="0" value="${il||''}" placeholder="0" data-ilset="${c.id}" aria-label="Item level of ${esc(c.name)}"></label>
+    <span class="muted">${il?(nx>-1?`Next unlock: +${ROUTE[nx][0]-il}`:'Everything unlocked'):'Set an item level to see unlocks'}</span></div>${rows}`;
+  return panel('route','Item Level Route',`${esc(c.name)} · IL ${il||'—'}`,body);
+}
+const BUILD={"Ranger":{"gear":[{"slot":"Weapon","stats":["Weapon Damage Boost","Combat Speed","Might","Precision","Damage Boost","Multi-Hit","Attack"]},{"slot":"Guard","stats":["Weapon Damage Boost","Combat Speed","Might","Precision","Damage Boost","Multi-Hit","Attack"]},{"slot":"Helm","stats":["Double Chance %","Attack %","Hunter's Resolve","Focused Eye","Incoming Heal","Crit","Attack"]},{"slot":"Shoulders","stats":["Crit Damage Boost","Focused Eye","Hunter's Resolve","Double Chance %","Crit","Attack","Accuracy"]},{"slot":"Chest","stats":["Damage Boost","Focused Eye","Hunter's Resolve","Perfect Chance","Crit","Accuracy","Attack"]},{"slot":"Necklace","stats":["Focused Eye","Hunter's Resolve","Combat Speed","Might","Precision","Accuracy","Crit"]},{"slot":"Pants","stats":["Attack Increase","Focused Eye","Hunter's Resolve","Perfect Chance","Damage Tolerance","Crit","Attack"]},{"slot":"Gloves","stats":["Combat Speed","Focused Eye","Hunter's Resolve","Crit","Attack","Accuracy","Hunter's Soul"]},{"slot":"Cloak","stats":["Double Chance %","Focused Eye","Hunter's Resolve","Attack Increase","Crit","Accuracy","Attack"]},{"slot":"Boots","stats":["Move Speed","Focused Eye","Hunter's Resolve","Perfect Chance","Crit","Attack","Accuracy"]},{"slot":"Earrings","stats":["Focused Eye","Hunter's Resolve","Might","Precision","Accuracy","Crit","Attack"]},{"slot":"Rings","stats":["Deadshot","Tempest Shot","Gale Arrow","Drill Dart","Might","Precision","Burst Arrow"]}],"gearNotes":["Sync: reaching the optimal roll takes time, so you may want to settle on one piece before working on the next.","You may want to settle while leveling, and you probably should not sync until you have gear level 86 or higher."],"maxed":["Amulet","Bracelets","Belt"],"genusIntro":"Specialty: prioritize slot 4 at level 9+, and get all slots to level 10 for the title. For damage: Red > Orange > Yellow > Blue.","genus":[{"name":"Cogni","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Boost = Crit Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Fera","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Boost = Weapon Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Natura","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","PvE Damage Boost > Multi-Hit = Perfect Chance","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Varian","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Front Attack % = Back Attack % ≥ PvE Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Specialty","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Double Chance > Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]}],"genusNotes":["There are other options as you roll and settle. This is what I'm targeting for now.","You will most likely need to settle on many genus rolls until you have more resources.","Power Damage cap is an acceptable place to settle. For later content, prioritize Accuracy and Crit on your board."],"divine":["Wisdom (MP Cost / Double Chance)","Destruction (Attack % / P. Resist)","Time (Combat Speed / Double Resist)","Death (Crit / Regen Pen)","Illusion (Cooldown % / End Pen)","Everything else"],"titles":["Attack: Unbound by Genus","Attack: Golden Glow / Guardian of Altgard","Defense: Saint of Altgard","Defense: Dominator of Dimensions","Special: Through Hell and Back / Executioner of High Command","Special: Empty Closet"],"stones":["Front Attack Damage ≥ Back Attack Damage","Attack","Weapon Damage Boost","Crit","Accuracy","Damage Boost"],"pantheon":["Illusion (Cooldown % / End Pen)","Wisdom (MP Cost / Double Chance)","Destiny (MP Inc / End %)","Life (HP Inc / Regen)","Everything else"],"arcana":["Deadshot","Gale Arrow","Tempest Shot","Drill Dart","Focused Eye","Hunter's Resolve"],"arcNotes":["Goal: +16, then +20 on your top 4.","Divine stat focus: 2 Vigor (Chalice & Parchment) and 3 Magic (Compass, Bell, Mirror)."],"adjust":["Chalice Vigor - Deadshot, Drill, Gale, Tempest, Snipe","Parchment Vigor - Drill Dart, Burst Arrow, Tempest Shot, Snipe","Compass Magic - Deadshot, Gale (Marking Shot)","Bell Magic - Hunter's Resolve > Rooting Eye (Vigor Eye)","Mirror Magic - Hunter's Soul, Focused Eye, Melee Fire, Conc. Fire"],"notes":["50% Crit cap (buffs and skills will not push you over the cap). Focus on Accuracy and other rolls after that.","Ludra Crit Defense requires 1600 Crit and an Accuracy of 1300–1400."]},"Sorcerer":{"gear":[{"slot":"Weapon","stats":["Weapon Damage Boost","Combat Speed","Might","Precision","Damage Boost","Multi-Hit","Attack"]},{"slot":"Guard","stats":["Weapon Damage Boost","Combat Speed","Might","Precision","Damage Boost","Multi-Hit","Attack"]},{"slot":"Helm","stats":["Double Chance %","Attack %","Attack","Robe of Flame","Incoming Heal","Crit","Attack"]},{"slot":"Shoulders","stats":["Crit Damage Boost","Robe of Flame","Attack","Double Chance %","Crit","Attack","Accuracy"]},{"slot":"Chest","stats":["Damage Boost","Robe of Flame","Attack","Perfect Chance","Crit","Accuracy","Attack"]},{"slot":"Necklace","stats":["Robe of Flame","Precision","Combat Speed","Might","Accuracy","Crit"]},{"slot":"Pants","stats":["Attack Increase","Robe of Flame","Attack","Perfect Chance","Damage Tolerance","Crit","Attack"]},{"slot":"Gloves","stats":["Combat Speed","Robe of Flame","Attack","Crit","Attack","Accuracy"]},{"slot":"Cloak","stats":["Double Chance %","Robe of Flame","Attack","Attack Increase","Crit","Accuracy","Attack"]},{"slot":"Boots","stats":["Move Speed","Robe of Flame","Attack","Perfect Chance","Crit","Attack","Accuracy"]},{"slot":"Earrings","stats":["Robe of Flame","Attack","Might","Precision","Accuracy","Crit","Attack"]},{"slot":"Rings","stats":["Blaze (so you don't run on cards)","Hellfire","Wish of Concentration","Flame Arrow","Firestorm","Might","Precision"]}],"gearNotes":["Sync: reaching the optimal roll takes time, so you may want to settle on one piece before working on the next.","You may want to settle while leveling, and you probably should not sync until you have gear level 86 or higher."],"maxed":["Amulet","Bracelets","Belt"],"genusIntro":"Specialty: prioritize slot 4 at level 9+, and get all slots to level 10 for the title. For damage: Red > Orange > Yellow > Blue.","genus":[{"name":"Cogni","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Boost = Crit Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Fera","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Boost = Weapon Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Natura","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","PvE Damage Boost > Multi-Hit = Perfect Chance","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Varian","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Front Attack % = Back Attack % ≥ PvE Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]},{"name":"Specialty","cells":["Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","HP Increase ≥ Boss Defense","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Double Chance > Damage Boost","Max Attack > Attack Bonus ≥ Boss Attack ≥ PvE Attack","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus","Damage Tolerance","HP Increase","Accuracy Bonus ≥ Crit (until cap) > Power Shard Bonus"]}],"genusNotes":["There are other options as you roll and settle. This is what I'm targeting for now.","You will most likely need to settle on many genus rolls until you have more resources.","Power Damage cap is an acceptable place to settle. For later content, prioritize Accuracy and Crit on your board."],"divine":["Illusion / Wisdom (MP Cost / Double Chance)","Destruction (Attack % / P. Resist)","Time (Combat Speed / Double Resist)","Death (Crit / Regen Pen)","Everything else"],"titles":["Attack: Unbound by Genus","Attack: Golden Glow / Guardian of Altgard","Defense: Saint of Altgard","Defense: Dominator of Dimensions","Special: Through Hell and Back / Executioner of High Command","Special: Empty Closet"],"stones":["Front Attack Damage ≥ Back Attack Damage","Attack","Weapon Damage Boost","Crit","Accuracy","Damage Boost"],"pantheon":["Illusion (Cooldown % / End Pen)","Wisdom (MP Cost / Double Chance)","Destiny (MP Inc / End %)","Life (HP Inc / Regen)","Everything else"],"arcana":["Wish of Concentration","Hellfire","Flame Arrow","Firestorm","Blaze","Robe of Flame"],"arcNotes":["Goal: +16, then +20 on your top 4.","Divine stat focus: 3 Vigor (Chalice, Parchment, Mirror) and 2 Magic (Compass, Bell).","You can run a Vigor Mirror or a Magic Mirror (Illusion vs Wisdom)."],"adjust":["Chalice Vigor - Wish of Concentration, Hellfire, Flame Arrow, Firestorm, Blaze","Parchment Vigor - Wish of Concentration, Hellfire, Flame Arrow, Firestorm, Blaze","Compass Magic - Bittercold Wind, Winter's Shackles, Icechain","Bell Magic - Robe of Cold, Fire Mark, Cold Snap, Others","Mirror Magic - Robe of Flame, Robe of Earth, Others"],"notes":["50% Crit cap (buffs and skills will not push you over the cap). Focus on Accuracy and other rolls after that.","Ludra Crit Defense requires 1600 Crit and an Accuracy of 1300–1400."]}};
+const BTABS=[['gear','Gear'],['genus','Genus'],['divine','Divine & Pantheon'],['arcana','Arcana'],['extras','Titles & Stones'],['notes','Notes']];
+const chips=(a,o)=>`<div class="chips">${a.map((x,i)=>`<span class="chip ${o&&i>=o?'o':''}"><i>${i+1}</i>${esc(x)}</span>`).join('')}</div>`;
+const brow=(t,a,o)=>`<div class="br" data-s="${esc((t+' '+a.join(' ')).toLowerCase())}"><b>${esc(t)}</b>${chips(a,o)}</div>`;
+const grp=cells=>{const m=new Map();cells.forEach((t,i)=>{if(!m.has(t))m.set(t,[]);m.get(t).push(i+1)});return [...m].map(([t,s])=>({t,s}))};
+const grow=(t,cells)=>`<div class="br" data-s="${esc((t+' '+cells.join(' ')).toLowerCase())}"><b>${esc(t)}</b><div class="chips list">${grp(cells).map(({t,s})=>`<span class="chip"><i>${s.join(' · ')}</i>${esc(t)}</span>`).join('')}</div></div>`;
+const bnotes=a=>a.filter(Boolean).map(x=>`<div class="bn">${esc(x)}</div>`).join('');
+const splitAdj=x=>{const m=x.split(/\s+-\s+/);return [m[0],(m[1]||'').split(/,\s*/).filter(Boolean)]};
+function rBuild(){
+  const b=S.build,d=BUILD[b.cls]||BUILD.Ranger;let body='';
+  if(b.tab==='gear')body=`<div class="bg">${d.gear.map(g=>brow(g.slot,g.stats,5)).join('')}</div><div class="bl">Max enhance only</div><div class="chips">${d.maxed.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>${bnotes(d.gearNotes)}<div class="muted" style="margin-top:8px">Numbers show priority order. Dimmed stats (6–7) are optional.</div>`;
+  else if(b.tab==='genus')body=`${bnotes([d.genusIntro])}<div class="bg" style="margin-top:8px">${d.genus.map(g=>grow(g.name,g.cells)).join('')}</div><div class="muted" style="margin-top:8px">Numbers show which slots use each priority.</div>${bnotes(d.genusNotes)}`;
+  else if(b.tab==='divine')body=`<div class="bg">${brow('Divine stat priority',d.divine)}${brow('Pantheon',d.pantheon)}</div>`;
+  else if(b.tab==='arcana')body=`<div class="bg">${brow('Arcana targets',d.arcana)}${d.adjust.map(x=>{const [t,a]=splitAdj(x);return brow(t,a)}).join('')}</div>${bnotes(d.arcNotes)}`;
+  else if(b.tab==='extras')body=`<div class="bg">${brow('Titles',d.titles)}${brow('Soul / Mana stones',d.stones)}</div>`;
+  else body=bnotes(d.notes);
+  const search=b.tab!=='notes'?`<input type="search" id="bq" placeholder="Search stats, e.g. Crit" aria-label="Search build guide">`:'';
+  const head=`<div class="bt"><div class="seg">${Object.keys(BUILD).map(c=>`<button class="${b.cls===c?'on':''}" data-a="bcls" data-v="${c}">${c}</button>`).join('')}</div>${search}</div>
+   <div class="bt chipsrow">${BTABS.map(([k,l])=>`<button class="tg ${b.tab===k?'on':''}" data-a="btab" data-v="${k}">${l}</button>`).join('')}</div>`;
+  return panel('build','Build Guide',`${b.cls} · ${BTABS.find(t=>t[0]===b.tab)[1]}`,head+body);
+}
+const R={sgt:rSgt,kst:rKst,daily:rDaily,weekly:rWeekly,check:rCheck,odyle:rOdyle,events:rEvents,build:rBuild,route:rRoute,links:rLinks};
+
+/* ---------- Layout engine ---------- */
+const zoneEl=z=>document.querySelector(`[data-z="${z}"]`);
+function tbar(id){
+  const b=(d,t,l)=>`<button class="wbt" data-a="mv" data-v="${id}|${d}" aria-label="${t}" title="${t}">${l}</button>`;
+  return `<div class="wb"><span class="grip" aria-hidden="true">⋮⋮</span><b>${NAME[id]}</b>${b('left','Move left','←')}${b('up','Move up','↑')}${b('down','Move down','↓')}${b('right','Move right','→')}${b('hide','Hide widget','✕')}</div>`;
+}
+function buildLayout(){
+  ZONES.forEach(z=>{
+    const head=layoutMode?`<div class="zh"><b>${ZN[z]}</b>${z==='strip'?'':`<button class="wbt" data-a="zw" data-v="${z}" title="Change column width">Width: ${wlabel(S.colw[z])}</button>`}</div>`:'';
+    zoneEl(z).innerHTML=head+S.layout[z].map(id=>`<div class="w ${TILES.includes(id)?'':'big'}" id="p-${id}" data-w="${id}" ${layoutMode?'draggable="true"':''}>${layoutMode?tbar(id):''}<div class="wc"></div></div>`).join('');
+  });
+  applyZones();
+}
+const visZ=z=>S.layout[z].some(id=>!S.hidden[id]);
+function applyZones(){
+  ZONES.forEach(z=>{zoneEl(z).hidden=!layoutMode&&!visZ(z)});
+  const used=['c1','c2','c3'].filter(z=>layoutMode||visZ(z));
+  $('#cols').hidden=!used.length;
+  $('#cols').style.setProperty('--gtc',used.map(z=>`minmax(0,${S.colw[z]||1}fr)`).join(' '));
+  $('#empty').hidden=layoutMode||ALLW.some(id=>!S.hidden[id]);
+  document.body.classList.toggle('lm',layoutMode);
+}
+function renderPanel(id){const el=$('#p-'+id);if(!el)return;el.hidden=!!S.hidden[id];if(!el.hidden)el.querySelector('.wc').innerHTML=R[id]()}
+function renderTop(){
+  $('#bEdit').innerHTML=`<span>${edit?'✓':'✎'}</span><span class="hm">${edit?'Done':'Edit tasks'}</span>`;
+  $('#bEdit').classList.toggle('on',edit);
+  $('#bEdit').setAttribute('aria-label',edit?'Finish editing tasks':'Edit tasks');
+  const lb=$('#lbar');lb.hidden=!layoutMode;
+  if(layoutMode){
+    const hid=ALLW.filter(id=>S.hidden[id]);
+    $('#lbarIn').innerHTML=`<span><b>Layout mode</b> — drag widgets (or use the arrows) to place them.</span><span class="sp"></span>${hid.map(id=>`<button class="btn sm" data-a="pv" data-v="${id}">＋ ${NAME[id]}</button>`).join('')}<button class="btn sm" data-a="preset" data-v="default">Reset layout</button><button class="btn sm pri" data-a="layout">Done</button>`;
+  }
+}
+function renderAll(){applyTheme();renderTop();ALLW.forEach(renderPanel);applyZones();tick()}
+const upd=(...ids)=>{save();ids.length?ids.forEach(renderPanel):renderAll();tick()};
+function relayout(){save();buildLayout();renderAll();renderTop()}
+
+function locate(id){for(const z of ZONES){const i=S.layout[z].indexOf(id);if(i>-1)return [z,i]}}
+function moveTo(id,z,idx){
+  const [oz,oi]=locate(id);S.layout[oz].splice(oi,1);
+  if(oz===z&&idx>oi)idx--;
+  S.layout[z].splice(Math.max(0,Math.min(idx,S.layout[z].length)),0,id);
+  relayout();
+}
+function step(id,dir){
+  const [z,i]=locate(id),arr=S.layout[z],horiz=z==='strip';
+  const sib=d=>{let j=i+d;while(arr[j]&&S.hidden[arr[j]])j+=d;return j};
+  const reorder=d=>{const j=sib(d);if(j<0||j>=arr.length)return false;moveTo(id,z,d<0?j:j+1);return true};
+  const side=d=>{const k=['c1','c2','c3'].indexOf(z)+d;if(k<0||k>2)return;moveTo(id,['c1','c2','c3'][k],Math.min(i,S.layout[['c1','c2','c3'][k]].length))};
+  if(dir==='hide'){S.hidden[id]=true;save();applyZones();renderPanel(id);renderTop();return}
+  if(horiz){
+    if(dir==='left')reorder(-1);else if(dir==='right')reorder(1);else if(dir==='down')moveTo(id,'c1',0);
+  }else{
+    if(dir==='up'){if(!reorder(-1)&&z==='c1')moveTo(id,'strip',S.layout.strip.length)}
+    else if(dir==='down')reorder(1);
+    else side(dir==='left'?-1:1);
+  }
+}
+/* drag & drop (desktop). Touch devices use the arrow buttons. */
+let dragId=null;
+function dropTarget(z,e){
+  const zid=z.dataset.z,list=S.layout[zid];
+  const kids=[...z.querySelectorAll(':scope>.w')].filter(w=>!w.hidden&&w.dataset.w!==dragId);
+  for(const w of kids){
+    const r=w.getBoundingClientRect(),inRow=zid==='strip'&&!w.classList.contains('big');
+    if(e.clientY<r.top)return {idx:list.indexOf(w.dataset.w),el:w};
+    if(e.clientY>r.bottom)continue;
+    if(inRow?e.clientX<r.left+r.width/2:e.clientY<r.top+r.height/2)return {idx:list.indexOf(w.dataset.w),el:w};
+  }
+  return {idx:list.length,el:null};
+}
+function clearDnD(){document.querySelectorAll('.ins,.ins-end,.over,.dragging').forEach(e=>e.classList.remove('ins','ins-end','over','dragging'))}
+document.addEventListener('dragstart',e=>{
+  const w=e.target.closest&&e.target.closest('.w');if(!layoutMode||!w)return;
+  dragId=w.dataset.w;w.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragId);
+});
+document.addEventListener('dragover',e=>{
+  if(!dragId)return;const z=e.target.closest&&e.target.closest('.zone');if(!z)return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.ins,.ins-end,.over').forEach(x=>x.classList.remove('ins','ins-end','over'));
+  z.classList.add('over');const t=dropTarget(z,e);t.el?t.el.classList.add('ins'):z.classList.add('ins-end');
+});
+document.addEventListener('drop',e=>{
+  if(!dragId)return;const z=e.target.closest&&e.target.closest('.zone');if(!z)return;
+  e.preventDefault();const t=dropTarget(z,e),id=dragId;dragId=null;clearDnD();moveTo(id,z.dataset.z,t.idx);
+});
+document.addEventListener('dragend',()=>{dragId=null;clearDnD()});
+
+/* ---------- Live tick ---------- */
+let sigEv='',sigOd='';
+function tick(){
+  const now=Date.now();
+  if(checkReset()){renderAll();return}
+  document.querySelectorAll('[data-clk]').forEach(e=>e.innerHTML=bigTime(now,e.dataset.clk));
+  document.querySelectorAll('[data-dt]').forEach(e=>e.textContent=F(e.dataset.dt,{weekday:'long',month:'short',day:'numeric'}).format(now));
+  document.querySelectorAll('[data-pr]').forEach(e=>e.style.width=(e.dataset.pr==='d'?(1-(nextDaily(now)-now)/D):(1-(nextWeekly(now)-now)/(7*D)))*100+'%');
+  document.querySelectorAll('[data-cd]').forEach(e=>{const ms=+e.dataset.cd-now;e.textContent=e.dataset.f==='hms'?hms(ms):dur(ms,true)});
+  const sev=sortedEvents(now).map(x=>x.ev.n+(x.s.live?'L':'N')).join(',')+Math.floor(now/60000);
+  if(sev!==sigEv){sigEv=sev;if(!S.hidden.events&&!layoutMode&&!document.activeElement?.closest('#p-events'))renderPanel('events')}
+  const sod=shownChars().map(c=>curEnergy(c,now)).join(',')+nextTick(now);
+  if(sod!==sigOd){sigOd=sod;if(!S.hidden.odyle&&!layoutMode&&!document.activeElement?.closest('#p-odyle'))renderPanel('odyle')}
+}
+
+/* ---------- Side menu ---------- */
+const ACCENTS=['#f5b942','#4cc9f0','#a78bfa','#fb7185','#3ddc97'];
+let deferredInstall=null;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+function renderMenu(){
+  const side=$('#side'),old=side.querySelector('.sb'),top=old?old.scrollTop:0;
+  const toggle=(attr,label,on)=>`<label class="sw-row"><span>${label}</span><input type="checkbox" role="switch" ${attr} ${on?'checked':''}></label>`;
+  const offline=('serviceWorker' in navigator&&navigator.serviceWorker.controller)?'<small><span class="dot"></span>Ready to work offline</small>':'';
+  const install=standalone?'':deferredInstall?'<button class="btn pri block" data-a="install">Install app</button>':(isIOS?'<small>To install: tap Share, then “Add to Home Screen”.</small>':'');
+  side.innerHTML=`
+  <div class="sh"><span>${LOGO}</span><div class="sht"><b>Top1 Tracker</b><small>Aion 2 companion</small></div><button class="ib" data-a="close" aria-label="Close menu">${ICON.x}</button></div>
+  <div class="sb">
+   <section class="msec"><h4>Layout</h4>
+    <button class="btn ${layoutMode?'on':'pri'} block" data-a="layout">${layoutMode?'Done customizing':'Customize layout'}</button>
+    <p class="hint">Drag widgets or use the arrows to place them anywhere. You can also change column widths.</p>
+    <div class="seg full">${[['default','Default'],['three','3 columns'],['single','Single']].map(([k,l])=>`<button data-a="preset" data-v="${k}">${l}</button>`).join('')}</div>
+   </section>
+   <section class="msec"><h4>Widgets</h4>
+    ${GROUPS.map(([g,ids])=>`<div class="gl">${g}</div>${ids.map(id=>toggle(`data-pv="${id}"`,NAME[id],!S.hidden[id])).join('')}`).join('')}
+    <button class="lnk" data-a="showall">Show all widgets</button>
+   </section>
+   <section class="msec"><h4>Characters</h4>
+    ${toggle('data-ch="acct"','Account (shared)',!S.charHidden.acct)}${S.chars.map(c=>toggle(`data-ch="${c.id}"`,esc(c.name),!S.charHidden[c.id])).join('')}
+   </section>
+   <section class="msec"><h4>Appearance</h4>
+    <div class="seg full">${[['light','Light'],['dark','Dark'],['auto','Auto']].map(([k,l])=>`<button class="${S.theme===k?'on':''}" data-a="themeset" data-v="${k}">${l}</button>`).join('')}</div>
+    <div class="gl">Accent color</div>
+    <div class="swatches">${ACCENTS.map(c=>`<button class="swt ${S.accent===c?'on':''}" style="background:${c}" data-a="accent" data-v="${c}" aria-label="Accent ${c}"></button>`).join('')}</div>
+    ${toggle('id="s12"','12-hour clock',S.hour12)}
+    ${toggle('id="scomp"','Compact Odyle panel',S.odCompact)}
+   </section>
+   <section class="msec"><h4>Preferences</h4>
+    ${toggle('id="spvp"','Show PvP weekly tasks',S.showPvp)}
+    <label class="sw-row"><span>Event times</span><select id="stz"><option value="sg" ${S.tz==='sg'?'selected':''}>Singapore (SGT)</option><option value="local" ${S.tz==='local'?'selected':''}>My device time</option></select></label>
+    <label class="sw-row"><span>Odyle maximum energy</span><input type="number" id="scap" min="1" value="${S.cap}"></label>
+   </section>
+   <section class="msec"><h4>Data</h4>
+    <div class="row"><button class="btn sm" data-a="exp">Export</button><button class="btn sm" data-a="imp">Import</button><button class="btn sm dg" data-a="rst">Reset all</button></div>
+    <p class="hint">Everything is saved only in this browser on this device. Export, then import on another device to move your progress.</p>
+   </section>
+  </div>
+  <div class="sf">${install}${offline}<small>Top1 Tracker · version 2</small></div>`;
+  const nb=side.querySelector('.sb');if(nb)nb.scrollTop=top;
+}
+function openMenu(){renderMenu();$('#scrim').hidden=false;requestAnimationFrame(()=>{$('#scrim').classList.add('open');$('#side').classList.add('open')});$('#bMenu').setAttribute('aria-expanded','true')}
+function closeMenu(){$('#side').classList.remove('open');$('#scrim').classList.remove('open');$('#bMenu').setAttribute('aria-expanded','false');setTimeout(()=>{if(!$('#side').classList.contains('open'))$('#scrim').hidden=true},220)}
+const menuOpen=()=>$('#side').classList.contains('open');
+
+/* ---------- Actions ---------- */
+const ch=id=>id==='acct'?S.acct:S.chars.find(c=>c.id===id);
+
+const A={
+ tk(v){const [k,c,t]=v.split('|'),x=ch(c)[k].find(y=>y.id===t);x.count=x.count>=x.max?0:x.max;upd('check')},
+ edit(){if(layoutMode)return;edit=!edit;renderTop();['check','events','links'].forEach(renderPanel)},
+ menu(){menuOpen()?closeMenu():openMenu()},
+ close(){closeMenu()},
+ layout(){layoutMode=!layoutMode;if(layoutMode){edit=false;closeMenu()}buildLayout();renderAll();if(menuOpen())renderMenu()},
+ preset(v){const p=PRESETS[v];S.layout=clone(p.layout);S.colw=clone(p.colw);relayout();if(menuOpen())renderMenu()},
+ mv(v){const [id,d]=v.split('|');step(id,d)},
+ zw(z){const i=WIDTHS.findIndex(w=>w[0]===S.colw[z]);S.colw[z]=WIDTHS[(i+1)%WIDTHS.length][0];save();buildLayout();renderAll()},
+ pv(v){S.hidden[v]=!S.hidden[v];save();applyZones();renderPanel(v);renderTop();if(menuOpen())renderMenu()},
+ showall(){S.hidden={};S.charHidden={};save();renderAll();renderMenu()},
+ chtog(v){S.charHidden[v]=!S.charHidden[v];upd('check','odyle');if(menuOpen())renderMenu()},
+ theme(){S.theme=theme()==='dark'?'light':'dark';save();applyTheme();if(menuOpen())renderMenu()},
+ themeset(v){S.theme=v;save();applyTheme();renderMenu()},
+ accent(v){S.accent=v;save();applyTheme();renderMenu()},
+ show(v){S.show=v;upd('check')},
+ addtask(v){const [k,c]=v.split('|'),n=prompt('Task name?');if(n&&n.trim()){ch(c)[k].push(T(n.trim()));upd('check')}},
+ deltask(v){const [k,c,t]=v.split('|'),o=ch(c);o[k]=o[k].filter(x=>x.id!==t);upd('check')},
+ addchar(){const n=prompt('Character name?');if(n&&n.trim()){S.chars.push({id:uid(),name:n.trim(),energy:0,energyAt:Date.now(),charged:0,...stdChar()});upd()}},
+ renchar(v){const c=ch(v),n=prompt('New name?',c.name);if(n&&n.trim()){c.name=n.trim();upd()}},
+ delchar(v){const c=ch(v);if(confirm('Delete '+c.name+'? This cannot be undone.')){S.chars=S.chars.filter(x=>x!==c);upd()}},
+ il(v){const c=ch(v),n=prompt('Item level for '+c.name+'? (leave empty to clear)',c.il||'');if(n===null)return;c.il=Math.max(0,parseInt(n)||0);upd('check','route')},
+ rchar(v){S.routeChar=v;upd('route')},
+ syncopen(){S.syncOpen=!S.syncOpen;upd('odyle')},
+ sync(){const m=parseFloat($('#syncMin').value);if(isNaN(m)||m<0||m>180)return alert('Enter the minutes (0–180) until your next +'+GAIN+'.');
+  const now=Date.now();S.chars.forEach(c=>{c.energy=curEnergy(c,now);c.energyAt=now});S.anchor=now+m*60000-TICK;S.syncOpen=false;upd('odyle')},
+ evall(){S.evAll=!S.evAll;upd('events')},
+ evhide(v){S.hiddenEv=S.hiddenEv.includes(v)?S.hiddenEv.filter(x=>x!==v):[...S.hiddenEv,v];upd('events')},
+ addlink(){let u=prompt('Link address (https://…)');if(!u)return;u=u.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;const n=prompt('Link name?')||u;S.links.push({id:uid(),name:n.trim(),url:u});upd('links')},
+ dellink(v){S.links=S.links.filter(l=>l.id!==v);upd('links')},
+ bcls(v){S.build.cls=v;upd('build')},
+ btab(v){S.build.tab=v;upd('build')},
+ install(){if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;renderMenu()})}},
+ exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='top1-tracker-backup.json';a.click()},
+ imp(){$('#impf').click()},
+ rst(){if(confirm('Erase all data on this device?')){localStorage.removeItem(KEY);S=defaults();normLayout();layoutMode=false;edit=false;buildLayout();renderAll();renderMenu()}}
+};
+document.addEventListener('click',e=>{
+  if(e.target.id==='scrim'){closeMenu();return}
+  const a=e.target.closest('[data-a]');
+  if(a){A[a.dataset.a]?.(a.dataset.v,a);return}
+  const c=e.target.closest('[data-c]');
+  if(c){const k=c.dataset.c;S.collapsed[k]=!S.collapsed[k];save();k.startsWith('c-')?renderPanel('check'):renderPanel(k)}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&menuOpen())closeMenu();
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button],[role=checkbox]')){e.preventDefault();e.target.click()}
+});
+document.addEventListener('change',e=>{
+  const el=e.target,d=el.dataset;
+  const find=v=>{const [k,c,t]=v.split('|');return ch(c)[k].find(x=>x.id===t)};
+  if(d.rn){find(d.rn).name=el.value.trim()||'Task';return save()}
+  if(d.eset){setEnergy(ch(d.eset),Math.min(S.cap,Math.max(0,+el.value||0)));return upd('odyle')}
+  if(d.charged){ch(d.charged).charged=Math.max(0,+el.value||0);return save()}
+  if(d.cls){ch(d.cls).cls=el.value;return upd('check','odyle')}
+  if(d.ilset){ch(d.ilset).il=Math.max(0,parseInt(el.value)||0);return upd('check','route')}
+  if(d.pv){S.hidden[d.pv]=!el.checked;save();applyZones();renderPanel(d.pv);return renderTop()}
+  if(d.ch){S.charHidden[d.ch]=!el.checked;return upd('check','odyle')}
+  if(el.id==='spvp'){S.showPvp=el.checked;return upd('check')}
+  if(el.id==='s12'){S.hour12=el.checked;return upd()}
+  if(el.id==='scomp'){S.odCompact=el.checked;return upd('odyle')}
+  if(el.id==='stz'){S.tz=el.value;return upd()}
+  if(el.id==='scap'){S.cap=Math.max(1,+el.value||840);return upd()}
+  if(el.id==='impf'){const f=el.files[0];if(!f)return;f.text().then(t=>{try{const o=JSON.parse(t);if(!o.chars)throw 0;S=Object.assign(defaults(),migrate(o));normLayout();layoutMode=false;buildLayout();renderAll();renderMenu()}catch{alert('This file is not a valid backup.')}})}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id!=='bq')return;const q=e.target.value.trim().toLowerCase();
+  document.querySelectorAll('#p-build .br').forEach(r=>r.classList.toggle('hid',!!q&&!r.dataset.s.includes(q)));
+});
+
+/* ---------- PWA ---------- */
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;if(menuOpen())renderMenu()});
+addEventListener('appinstalled',()=>{deferredInstall=null;if(menuOpen())renderMenu()});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+/* ---------- Start ---------- */
+$('#brandLogo').innerHTML=LOGO;
+buildLayout();renderAll();save();
+setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>
