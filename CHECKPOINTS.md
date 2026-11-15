@@ -30,6 +30,7 @@ Rescue a single file from the checkpoint:
 - **Clocks:** Singapore time, Aion 2 server time (KST), daily reset and weekly reset. They resize to fit their own box. Daily reset is 3:00 PM Singapore, weekly reset is Wednesday 3:00 PM.
 - **Checklist:** one row of tabs (Account plus each character). One card shows at a time. Every task is a single tap. The Account card holds the tasks shared by all characters. Tasks reset by themselves at the daily and weekly reset, including when the app was closed.
 - **Odyle energy:** each character has an energy number that rises by itself on server time (default +15 every 3 hours). Setup is two steps: the time left on the game's recharge timer (hours and minutes), then the amount and the hours between recharges. It shows gain today, the next recharge countdown, and time to full.
+- **Characters (menu):** open the hamburger menu, then Characters. Add a character with a name and a class. Each row has an editable name, a class picker and a delete button. Names must be filled in and unique (Account is reserved and locked), at least one character must stay, and delete asks first. Deleting the character on screen falls back to Account.
 - **Charged energy:** one quiet line per character. Tap the number to change it.
 - **Events:** a 12-hour timeline of the major events, a pulse strip for the two hourly events, and a Coming up list.
 - **Build guide:** Ranger and Sorcerer stat priorities, with search.
@@ -48,7 +49,7 @@ Not in the repository on purpose: `my-data.json`, `Daily Checklist.xlsx`, `New R
 ### Settings to remember
 
 - Odyle recharge defaults to +15 every 3 hours. These are your own numbers from the game and can be changed under "Set up" on the Odyle panel.
-- Saved data lives in each browser (key `top1tracker.v2`, data version 13). Use Menu, Data, Export to back it up.
+- Saved data lives in each browser (key `top1tracker.v2`, data version 14). Use Menu, Data, Export to back it up.
 
 ### Known gaps at this point
 
@@ -58,16 +59,7 @@ Not in the repository on purpose: `my-data.json`, `Daily Checklist.xlsx`, `New R
 - The Odyle recharge amount and interval apply to every character.
 - The GitHub Pages copy is older than this checkpoint until you upload the new files.
 
----
+### History of this checkpoint
 
-## After Checkpoint #1 (not a checkpoint yet)
-
-Commit on top of the tag: **Characters: add, rename, change class and delete from the menu**.
-
-- A **Characters** section in the menu (open with the hamburger button). Each row has a name box, a class picker and a delete button. An Add form sits under the rows.
-- Names must be filled in and unique (not case sensitive). Account is reserved and locked. At least one character must stay.
-- Deleting asks first and says what is lost. If the deleted character was on screen, the checklist falls back to Account.
-- The old Rename and Delete buttons inside Edit tasks were removed, since this replaces them.
-- Data version 14. Any character hidden by an older version is shown again.
-
-To see exactly what changed since the checkpoint: `git diff checkpoint-1-ep01`.
+- First saved without the Characters menu.
+- Moved once, at your request, to include the Characters menu. The earlier commit is still in the history.
