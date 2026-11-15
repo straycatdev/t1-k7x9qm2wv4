@@ -57,3 +57,17 @@ Not in the repository on purpose: `my-data.json`, `Daily Checklist.xlsx`, `New R
 - The recharge interval (3 hours) is a default taken from your first message. Confirm it against the game.
 - The Odyle recharge amount and interval apply to every character.
 - The GitHub Pages copy is older than this checkpoint until you upload the new files.
+
+---
+
+## After Checkpoint #1 (not a checkpoint yet)
+
+Commit on top of the tag: **Characters: add, rename, change class and delete from the menu**.
+
+- A **Characters** section in the menu (open with the hamburger button). Each row has a name box, a class picker and a delete button. An Add form sits under the rows.
+- Names must be filled in and unique (not case sensitive). Account is reserved and locked. At least one character must stay.
+- Deleting asks first and says what is lost. If the deleted character was on screen, the checklist falls back to Account.
+- The old Rename and Delete buttons inside Edit tasks were removed, since this replaces them.
+- Data version 14. Any character hidden by an older version is shown again.
+
+To see exactly what changed since the checkpoint: `git diff checkpoint-1-ep01`.

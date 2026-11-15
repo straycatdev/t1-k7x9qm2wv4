@@ -357,6 +357,16 @@ h1 b{background:linear-gradient(90deg,#ff4b68,var(--ac) 45%,var(--vi2));-webkit-
 .sw-row input[type=checkbox]:checked{background:color-mix(in srgb,var(--ac) 32%,var(--s3));border-color:var(--ac);box-shadow:var(--halo-ac)}
 .sw-row input[type=checkbox]:checked::after{transform:translateX(18px);background:#fff}
 .sw-row input[type=number]{width:84px}
+.crow{display:flex;align-items:center;gap:6px;padding:4px 0;min-height:40px}
+.crow.acct{opacity:.8}
+.crow .cname{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}.crow .cname small{display:block;color:var(--mu);font-weight:400;font-size:10.5px}
+.cname-in{flex:1 1 90px;min-width:0;min-height:34px;padding:2px 8px;font-weight:600}
+.crow select{flex:0 1 104px;min-width:0;min-height:34px;padding:2px 6px;font-size:12px}
+.cdel{flex:none;width:34px;height:34px;border-radius:9px;border:1px solid color-mix(in srgb,var(--bad) 35%,var(--ln));background:none;color:var(--bad);font-size:14px;padding:0}
+.cdel:hover{background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.cadd{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:10px;border-top:1px dashed var(--ln)}
+.cadd input{flex:1 1 120px;min-width:0;min-height:36px}
+.cadd select{flex:0 1 104px;min-width:0;min-height:36px;font-size:12px}
 .swatches{display:flex;gap:10px;margin-top:10px}
 .swt{width:30px;height:30px;border-radius:50%;border:2px solid transparent;padding:0;box-shadow:0 0 0 1px var(--ln2)}
 .swt.on{border-color:var(--tx)}
@@ -477,7 +487,7 @@ const WIDTHS=[[1,'Narrow'],[1.7,'Wide'],[2.4,'Extra wide']];
 const wlabel=v=>(WIDTHS.find(w=>w[0]===v)||WIDTHS[0])[1];
 
 /* ---------- State ---------- */
-const NV=13;
+const NV=14;
 const CL={
  Ranger:{c:'#2fe6c8',p:'<path d="M6 3c11 3 11 15 0 18"/><path d="M6 3v18"/><path d="M3 12h17M17 9l3 3-3 3"/>'},
  Chanter:{c:'#4cc9f0',p:'<path d="M12 21V9"/><circle cx="12" cy="6" r="3"/><path d="M6 5c-1.5 2-1.5 4 0 6M18 5c1.5 2 1.5 4 0 6"/>'},
@@ -614,6 +624,10 @@ function migrate(r){
     if(r.gainAmt===25&&r.gainHrs===4){r.gainAmt=15;r.gainHrs=3}
     delete r.perDay;delete r.ticksPerDay;
   }
+  if(nv<14){
+    // a hidden character could no longer be un-hidden from anywhere, so make sure none stays invisible
+    r.charHidden={};
+  }
   r.nv=NV;return r;
 }
 S=Object.assign(defaults(),raw?migrate(raw):{});
@@ -730,11 +744,11 @@ function rCheck(){
     const badge=isA?`<span class="cb" style="--cc:var(--cy)">${GLOBE}</span>`:clsIcon(cur.cls,20);
     body=`<div class="chead">${badge}<div class="cn"><b>${esc(cur.name)}</b><small>${isA?'Shared by all characters':(cur.cls?esc(cur.cls):'No class set')}</small></div><div class="gauge" style="--p:${st.pct}"><i>${st.done?'✓':st.pct+'%'}</i></div></div>
      ${S.show!=='weekly'?section(cur,'daily'):''}${S.show!=='daily'?section(cur,'weekly'):''}
-     ${edit&&!isA?`<div class="ft"><select data-cls="${cur.id}" aria-label="Class of ${esc(cur.name)}"><option value="">No class</option>${Object.keys(CL).filter(k=>k!=='_').map(k=>`<option ${cur.cls===k?'selected':''}>${k}</option>`).join('')}</select><button class="btn sm" data-a="renchar" data-v="${cur.id}">Rename</button><button class="btn sm dg" data-a="delchar" data-v="${cur.id}">Delete</button></div>`:''}`;
+     `;
   }
   const html=`<div class="tabs" role="tablist" aria-label="Characters">${tabs}</div>
-   <div class="tb"><div class="seg">${[['both','Both'],['daily','Daily'],['weekly','Weekly']].map(([v,l])=>`<button class="${S.show===v?'on':''}" data-a="show" data-v="${v}">${l}</button>`).join('')}</div><span class="sp"></span>${edit?'<button class="btn sm" data-a="addchar">＋ Character</button>':''}</div>
-   ${edit?'<div class="muted" style="margin-bottom:8px">Editing: rename or remove tasks. Tap Done when finished.</div>':''}
+   <div class="tb"><div class="seg">${[['both','Both'],['daily','Daily'],['weekly','Weekly']].map(([v,l])=>`<button class="${S.show===v?'on':''}" data-a="show" data-v="${v}">${l}</button>`).join('')}</div><span class="sp"></span></div>
+   ${edit?'<div class="muted" style="margin-bottom:8px">Editing tasks: rename or remove them. To add, rename or delete a character, open the menu ☰.</div>':''}
    <div class="cardv">${body}</div>`;
   return panel('check','Checklist',`Daily ${tot[0]}/${tot[1]} · Weekly ${tot[2]}/${tot[3]}`,html);
 }
@@ -965,6 +979,16 @@ function renderMenu(){
     <button class="btn ${layoutMode?'on':'pri'} block" data-a="layout">${layoutMode?'Done customizing':'Customize layout'}</button>
     <div class="chipsrow" style="margin-top:10px" aria-label="Show or hide sections">${W.map(([id,l])=>`<button class="tg ${S.hidden[id]?'':'on'}" data-a="pv" data-v="${id}" aria-pressed="${!S.hidden[id]}">${l}</button>`).join('')}</div>
    </section>
+   <section class="msec"><h4>Characters</h4>
+    <div class="crow acct"><span class="cb sm" style="--cc:var(--cy)">${GLOBE}</span><span class="cname">Account <small>shared · always on</small></span></div>
+    ${S.chars.map(c=>`<div class="crow" data-row="${c.id}">${clsIcon(c.cls,13,'sm')}
+      <input class="cname-in" value="${esc(c.name)}" maxlength="24" data-cname="${c.id}" aria-label="Name of ${esc(c.name)}">
+      <select data-cls="${c.id}" aria-label="Class of ${esc(c.name)}"><option value="">No class</option>${Object.keys(CL).filter(k=>k!=='_').map(k=>`<option ${c.cls===k?'selected':''}>${k}</option>`).join('')}</select>
+      <button class="cdel" data-a="delchar" data-v="${c.id}" aria-label="Delete ${esc(c.name)}" title="Delete">✕</button></div>`).join('')}
+    <div class="cadd"><input id="newname" maxlength="24" placeholder="New character name" aria-label="New character name">
+      <select id="newcls" aria-label="Class of the new character"><option value="">No class</option>${Object.keys(CL).filter(k=>k!=='_').map(k=>`<option>${k}</option>`).join('')}</select>
+      <button class="btn sm on" data-a="addchar">Add</button></div>
+   </section>
    <section class="msec"><h4>Appearance</h4>
     <div class="seg full">${[['light','Light'],['dark','Dark'],['auto','Auto']].map(([k,l])=>`<button class="${S.theme===k?'on':''}" data-a="themeset" data-v="${k}">${l}</button>`).join('')}</div>
     <div class="swatches">${ACCENTS.map(c=>`<button class="swt ${S.accent===c?'on':''}" style="background:${c}" data-a="accent" data-v="${c}" aria-label="Accent ${c}"></button>`).join('')}</div>
@@ -988,6 +1012,8 @@ const menuOpen=()=>$('#side').classList.contains('open');
 
 /* ---------- Actions ---------- */
 const ch=id=>id==='acct'?S.acct:S.chars.find(c=>c.id===id);
+const nameTaken=(n,exceptId)=>S.chars.some(c=>c.id!==exceptId&&c.name.trim().toLowerCase()===n.trim().toLowerCase())||n.trim().toLowerCase()==='account';
+const cleanName=n=>String(n||'').replace(/\s+/g,' ').trim().slice(0,24);
 
 const A={
  tk(v){const [k,c,t]=v.split('|'),x=ch(c)[k].find(y=>y.id===t);x.count=x.count>=x.max?0:x.max;upd('check')},
@@ -1007,9 +1033,23 @@ const A={
  cview(v){S.cview=v;upd('check')},
  addtask(v){const [k,c]=v.split('|'),n=prompt('Task name?');if(n&&n.trim()){ch(c)[k].push(T(n.trim()));upd('check')}},
  deltask(v){const [k,c,t]=v.split('|'),o=ch(c);o[k]=o[k].filter(x=>x.id!==t);upd('check')},
- addchar(){const n=prompt('Character name?');if(n&&n.trim()){S.chars.push({id:uid(),name:n.trim(),energy:0,energyAt:Date.now(),charged:0,...stdChar()});upd()}},
- renchar(v){const c=ch(v),n=prompt('New name?',c.name);if(n&&n.trim()){c.name=n.trim();upd()}},
- delchar(v){const c=ch(v);if(confirm('Delete '+c.name+'? This cannot be undone.')){S.chars=S.chars.filter(x=>x!==c);upd()}},
+ addchar(){
+  const inp=$('#newname'),n=cleanName(inp?inp.value:'');
+  if(!n)return alert('Type a name for the new character first.');
+  if(nameTaken(n))return alert('You already have a character called "'+n+'". Pick a different name.');
+  const cls=($('#newcls')||{}).value||'';
+  const c={id:uid(),name:n,cls,energy:0,energyAt:Date.now(),charged:0,...stdChar()};
+  S.chars.push(c);S.cview=c.id;S.charHidden={};save();renderAll();renderMenu();
+  const b=$('#newname');if(b)b.value='';
+ },
+ delchar(v){
+  const c=ch(v);if(!c||c.id==='acct')return;
+  if(S.chars.length<=1)return alert('You need at least one character. Add another one first if you want to replace this.');
+  if(!confirm('Delete "'+c.name+'"?\n\nThis removes its tasks, ticks, Odyle energy ('+energyOf(c)+') and charged energy ('+chgOf(c)+'). It cannot be undone.'))return;
+  S.chars=S.chars.filter(x=>x!==c);
+  if(S.cview===c.id)S.cview='acct';
+  save();renderAll();renderMenu();
+ },
  eadd(v){const [id,x]=v.split('|'),c=ch(id);setEnergy(c,x==='max'?S.cap:x==='0'?0:energyOf(c)+(+x));upd('odyle')},
  odset(){S.odOpen=!S.odOpen;upd('odyle')},
  odsync(){
@@ -1042,6 +1082,7 @@ document.addEventListener('click',e=>{
   if(c){const k=c.dataset.c;S.collapsed[k]=!S.collapsed[k];save();k.startsWith('c-')?renderPanel('check'):renderPanel(k)}
 });
 document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='newname'){e.preventDefault();A.addchar();return}
   if(e.key==='Escape'&&menuOpen())closeMenu();
   if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button],[role=checkbox]')){e.preventDefault();e.target.click()}
 });
@@ -1053,7 +1094,11 @@ document.addEventListener('change',e=>{
   if(el.id==='od-amt'){const now=Date.now();S.chars.forEach(c=>{c.energy=Math.min(S.cap,Math.round(curEnergy(c,now)));c.energyAt=now});S.gainAmt=Math.max(0,+el.value||0);return upd('odyle')}
   if(el.id==='od-hrs'){const now=Date.now();S.chars.forEach(c=>{c.energy=Math.min(S.cap,Math.round(curEnergy(c,now)));c.energyAt=now});S.gainHrs=Math.max(.5,Math.min(24,+el.value||3));S.anchor=null;return upd('odyle')}
   if(d.charged){const c=ch(d.charged);c.charged=Math.max(0,Math.round(+el.value)||0);return upd('odyle')}
-  if(d.cls){ch(d.cls).cls=el.value;return upd('check','odyle')}
+  if(d.cls){ch(d.cls).cls=el.value;upd('check','odyle');if(menuOpen())renderMenu();return}
+  if(d.cname){const c=ch(d.cname),n=cleanName(el.value);
+    if(!n){el.value=c.name;return alert('A character needs a name.')}
+    if(nameTaken(n,c.id)){el.value=c.name;return alert('You already have a character called "'+n+'". Pick a different name.')}
+    c.name=n;el.value=n;upd('check','odyle');return}
   if(d.pv){S.hidden[d.pv]=!el.checked;save();applyZones();renderPanel(d.pv);return renderTop()}
   if(d.ch){S.charHidden[d.ch]=!el.checked;return upd('check','odyle')}
   if(el.id==='spvp'){S.showPvp=el.checked;return upd('check')}
