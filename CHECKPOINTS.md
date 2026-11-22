@@ -63,3 +63,46 @@ Not in the repository on purpose: `my-data.json`, `Daily Checklist.xlsx`, `New R
 
 - First saved without the Characters menu.
 - Moved once, at your request, to include the Characters menu. The earlier commit is still in the history.
+
+---
+
+## Checkpoint #2: November 23, 2026 - Life Skill Tags
+
+Tag: `checkpoint-2-life-skill-tags`
+
+### How to come back to this point
+
+See what changed since the checkpoint:
+
+    git diff checkpoint-2-life-skill-tags
+
+Look at the checkpoint without changing anything (safe):
+
+    git switch --detach checkpoint-2-life-skill-tags
+    git switch main        # to go back to the latest
+
+Throw away everything after the checkpoint and return to it (this deletes later work):
+
+    git reset --hard checkpoint-2-life-skill-tags
+
+Rescue a single file from the checkpoint:
+
+    git restore --source=checkpoint-2-life-skill-tags index.html
+
+### What is new since Checkpoint #1
+
+- **Life skill tags:** each character can be tagged with the life skills it has maxed: Odyle, Ore, Gem, Log, Herb, Ingredient. A character can have several. Set them in the menu, under Characters, with the six small buttons under each character's row.
+- **Where they show:** as small tags under the character's name and class on its Checklist card. The Account card has none.
+- **Data:** saved with the rest of the data, so Export and Import carry it. Data version is now 15 (was 14). Existing characters start with no tags.
+- **Offline cache:** version `top1-v3-9`.
+- **GitHub:** the project is now pushed to `straycatdev/t1-k7x9qm2wv4`. The two earlier web-upload commits on GitHub were merged into the history, keeping the local files.
+
+### Known gaps at this point
+
+- Not tested on a real phone. The tags were tested in a desktop headless browser only.
+- No "who should I use?" lookup yet. The tags are display only.
+- Same open items as Checkpoint #1 about the weekly reset and the 3-hour Odyle interval.
+
+### Ideas parked for later
+
+World boss respawn tracker, item level per character with unlock hints, Rift timer check, Sunday Abyss Order scroll reminder, weekly history (skipped for now).
