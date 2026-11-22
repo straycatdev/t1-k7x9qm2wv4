@@ -1,6 +1,6 @@
 /* Top1 Tracker service worker: caches the app so it opens offline.
    Bump VERSION whenever you change any app file, so devices pick up the update. */
-const VERSION = 'top1-v3-8';
+const VERSION = 'top1-v3-9';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

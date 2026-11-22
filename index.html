@@ -359,6 +359,10 @@ h1 b{background:linear-gradient(90deg,#ff4b68,var(--ac) 45%,var(--vi2));-webkit-
 .sw-row input[type=number]{width:84px}
 .crow{display:flex;align-items:center;gap:6px;padding:4px 0;min-height:40px}
 .crow.acct{opacity:.8}
+.skrow{display:flex;flex-wrap:wrap;gap:4px;padding:0 0 8px 24px;border-bottom:1px solid var(--ln)}
+.skrow .tg{min-height:26px;padding:1px 8px;font-size:11.5px}
+.sktags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.skt{font-size:11px;line-height:1;padding:3px 8px;border-radius:20px;color:var(--tx);border:1px solid color-mix(in srgb,var(--vi) 60%,var(--ln));background:color-mix(in srgb,var(--vi) 14%,transparent)}
 .crow .cname{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}.crow .cname small{display:block;color:var(--mu);font-weight:400;font-size:10.5px}
 .cname-in{flex:1 1 90px;min-width:0;min-height:34px;padding:2px 8px;font-weight:600}
 .crow select{flex:0 1 104px;min-width:0;min-height:34px;padding:2px 6px;font-size:12px}
@@ -487,7 +491,8 @@ const WIDTHS=[[1,'Narrow'],[1.7,'Wide'],[2.4,'Extra wide']];
 const wlabel=v=>(WIDTHS.find(w=>w[0]===v)||WIDTHS[0])[1];
 
 /* ---------- State ---------- */
-const NV=14;
+const NV=15;
+const SKILLS=['Odyle','Ore','Gem','Log','Herb','Ingredient'];   // life skills a character can have maxed
 const CL={
  Ranger:{c:'#2fe6c8',p:'<path d="M6 3c11 3 11 15 0 18"/><path d="M6 3v18"/><path d="M3 12h17M17 9l3 3-3 3"/>'},
  Chanter:{c:'#4cc9f0',p:'<path d="M12 21V9"/><circle cx="12" cy="6" r="3"/><path d="M6 5c-1.5 2-1.5 4 0 6M18 5c1.5 2 1.5 4 0 6"/>'},
@@ -512,7 +517,7 @@ const DEFLINKS=()=>[
  {id:uid(),name:'YouTube',url:'https://www.youtube.com/',ic:'▶️'},
  {id:uid(),name:'Twitch',url:'https://www.twitch.tv/',ic:'🟣'}];
 function defaults(){
-  const mk=(name,energy,charged,x)=>({id:uid(),name,cls:'',energy,energyAt:Date.now(),charged,...(x||stdChar())});
+  const mk=(name,energy,charged,x)=>({id:uid(),name,cls:'',skills:[],energy,energyAt:Date.now(),charged,...(x||stdChar())});
   return {nv:NV,cap:840,gainAmt:15,gainHrs:3,anchor:null,odOpen:false,cview:'',hour12:true,tz:'sg',accent:'#FF1E42',theme:'dark',show:'both',hideDone:false,showPvp:false,evAll:false,
    layout:clone(PRESETS.default.layout),colw:clone(PRESETS.default.colw),
    dailyId:dayId(Date.now()),weeklyId:weekId(Date.now()),hidden:{},charHidden:{},collapsed:{build:true},hiddenEv:[],build:{cls:'Ranger',tab:'gear'},
@@ -628,6 +633,10 @@ function migrate(r){
     // a hidden character could no longer be un-hidden from anywhere, so make sure none stays invisible
     r.charHidden={};
   }
+  if(nv<15){
+    // life skill tags (Odyle, Ore, Gem, Log, Herb, Ingredient) per character
+    (r.chars||[]).forEach(c=>{if(!Array.isArray(c.skills))c.skills=[]});
+  }
   r.nv=NV;return r;
 }
 S=Object.assign(defaults(),raw?migrate(raw):{});
@@ -742,7 +751,7 @@ function rCheck(){
   else{
     const isA=cur.id==='acct',st=tabStat(cur);
     const badge=isA?`<span class="cb" style="--cc:var(--cy)">${GLOBE}</span>`:clsIcon(cur.cls,20);
-    body=`<div class="chead">${badge}<div class="cn"><b>${esc(cur.name)}</b><small>${isA?'Shared by all characters':(cur.cls?esc(cur.cls):'No class set')}</small></div><div class="gauge" style="--p:${st.pct}"><i>${st.done?'✓':st.pct+'%'}</i></div></div>
+    body=`<div class="chead">${badge}<div class="cn"><b>${esc(cur.name)}</b><small>${isA?'Shared by all characters':(cur.cls?esc(cur.cls):'No class set')}</small>${!isA&&(cur.skills||[]).length?`<div class="sktags" title="Maxed life skills">${cur.skills.map(s=>`<span class="skt">${s}</span>`).join('')}</div>`:''}</div><div class="gauge" style="--p:${st.pct}"><i>${st.done?'✓':st.pct+'%'}</i></div></div>
      ${S.show!=='weekly'?section(cur,'daily'):''}${S.show!=='daily'?section(cur,'weekly'):''}
      `;
   }
@@ -984,7 +993,8 @@ function renderMenu(){
     ${S.chars.map(c=>`<div class="crow" data-row="${c.id}">${clsIcon(c.cls,13,'sm')}
       <input class="cname-in" value="${esc(c.name)}" maxlength="24" data-cname="${c.id}" aria-label="Name of ${esc(c.name)}">
       <select data-cls="${c.id}" aria-label="Class of ${esc(c.name)}"><option value="">No class</option>${Object.keys(CL).filter(k=>k!=='_').map(k=>`<option ${c.cls===k?'selected':''}>${k}</option>`).join('')}</select>
-      <button class="cdel" data-a="delchar" data-v="${c.id}" aria-label="Delete ${esc(c.name)}" title="Delete">✕</button></div>`).join('')}
+      <button class="cdel" data-a="delchar" data-v="${c.id}" aria-label="Delete ${esc(c.name)}" title="Delete">✕</button></div>
+      <div class="skrow" role="group" aria-label="Maxed life skills of ${esc(c.name)}">${SKILLS.map(s=>{const on=(c.skills||[]).includes(s);return `<button class="tg ${on?'on':''}" data-a="skill" data-v="${c.id}|${s}" aria-pressed="${on}">${s}</button>`}).join('')}</div>`).join('')}
     <div class="cadd"><input id="newname" maxlength="24" placeholder="New character name" aria-label="New character name">
       <select id="newcls" aria-label="Class of the new character"><option value="">No class</option>${Object.keys(CL).filter(k=>k!=='_').map(k=>`<option>${k}</option>`).join('')}</select>
       <button class="btn sm on" data-a="addchar">Add</button></div>
@@ -1038,7 +1048,7 @@ const A={
   if(!n)return alert('Type a name for the new character first.');
   if(nameTaken(n))return alert('You already have a character called "'+n+'". Pick a different name.');
   const cls=($('#newcls')||{}).value||'';
-  const c={id:uid(),name:n,cls,energy:0,energyAt:Date.now(),charged:0,...stdChar()};
+  const c={id:uid(),name:n,cls,skills:[],energy:0,energyAt:Date.now(),charged:0,...stdChar()};
   S.chars.push(c);S.cview=c.id;S.charHidden={};save();renderAll();renderMenu();
   const b=$('#newname');if(b)b.value='';
  },
@@ -1067,6 +1077,9 @@ const A={
  evhide(v){S.hiddenEv=S.hiddenEv.includes(v)?S.hiddenEv.filter(x=>x!==v):[...S.hiddenEv,v];upd('events')},
  addlink(){let u=prompt('Link address (https://…)');if(!u)return;u=u.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;const n=prompt('Link name?')||u;S.links.push({id:uid(),name:n.trim(),url:u});upd('links')},
  dellink(v){S.links=S.links.filter(l=>l.id!==v);upd('links')},
+ skill(v){const [id,s]=v.split('|'),c=ch(id);if(!c||id==='acct'||!SKILLS.includes(s))return;
+  const a=Array.isArray(c.skills)?c.skills:[];c.skills=a.includes(s)?a.filter(x=>x!==s):SKILLS.filter(x=>x===s||a.includes(x));
+  save();renderPanel('check');if(menuOpen())renderMenu()},
  bcls(v){S.build.cls=v;upd('build')},
  btab(v){S.build.tab=v;upd('build')},
  install(){if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;renderMenu()})}},
